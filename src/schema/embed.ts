@@ -25,7 +25,7 @@ const embedObjectSchema = z.object({
   title: z.string().max(LIMITS.EMBED_TITLE_MAX).optional(),
   description: z.string().max(LIMITS.EMBED_DESCRIPTION_MAX).optional(),
   url: urlSchema.optional(),
-  timestamp: z.string().datetime({ offset: true }).optional(),
+  timestamp: z.iso.datetime({ offset: true }).optional(),
   color: z.number().int().min(0).max(LIMITS.EMBED_COLOR_MAX).optional(),
   footer: z
     .object({
