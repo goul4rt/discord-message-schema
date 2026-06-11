@@ -1,6 +1,6 @@
 {
   "name": "@delfus/discord-message-schema",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shared Zod schemas, Discord limits and wire types for Delfus rich messages (front-end ↔ discord-bot contract)",
   "license": "MIT",
   "repository": {
@@ -24,13 +24,16 @@
       "require": "./dist/fixtures/index.cjs"
     }
   },
-  "files": ["dist", "LICENSE", "README.md"],
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
-    "prepare": "npm run build"
+    "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
     "zod": "^4.0.0"
