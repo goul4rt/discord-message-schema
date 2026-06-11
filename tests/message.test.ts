@@ -56,4 +56,13 @@ describe('messageSchema', () => {
       messageSchema.safeParse({ content: 'x', allowed_mentions: { parse: ['bots'] } }).success,
     ).toBe(false);
   });
+
+  it('rejeita parse users combinado com lista explícita de users', () => {
+    expect(
+      messageSchema.safeParse({
+        content: 'x',
+        allowed_mentions: { parse: ['users'], users: ['123456789012345678'] },
+      }).success,
+    ).toBe(false);
+  });
 });

@@ -18,6 +18,18 @@ describe('urlSchema', () => {
     expect(urlSchema.safeParse('javascript:alert(1)').success).toBe(false);
     expect(urlSchema.safeParse('não é url').success).toBe(false);
   });
+
+  it('rejeita protocolo proibido mascarado por placeholder e lixo após a URL', () => {
+    expect(urlSchema.safeParse('javascript:alert(1){{serverIcon}}').success).toBe(false);
+    expect(urlSchema.safeParse('data:text/html,{{server}}').success).toBe(false);
+    expect(urlSchema.safeParse('https://x.com\ngarbage').success).toBe(false);
+    expect(urlSchema.safeParse('https://x.com garbage').success).toBe(false);
+  });
+
+  it('aceita placeholder puro e https com placeholder no path', () => {
+    expect(urlSchema.safeParse('{{serverIcon}}').success).toBe(true);
+    expect(urlSchema.safeParse('https://cdn.x.com/{{server}}/icon.png').success).toBe(true);
+  });
 });
 
 describe('embedFieldSchema', () => {
@@ -68,6 +80,20 @@ describe('embedSchema', () => {
 
   it('rejeita timestamp que não é ISO 8601', () => {
     expect(embedSchema.safeParse({ title: 'x', timestamp: 'ontem' }).success).toBe(false);
+  });
+
+  it('aceita valores exatamente no limite', () => {
+    expect(embedSchema.safeParse({ title: 'a'.repeat(256) }).success).toBe(true);
+    expect(embedSchema.safeParse({ title: 'x', description: 'b'.repeat(4096) }).success).toBe(true);
+    expect(embedSchema.safeParse({ title: 'x', color: 0 }).success).toBe(true);
+    expect(embedSchema.safeParse({ title: 'x', color: 0xffffff }).success).toBe(true);
+    const fields25 = Array.from({ length: 25 }, (_, i) => ({ name: `f${i}`, value: 'v' }));
+    expect(embedSchema.safeParse({ fields: fields25 }).success).toBe(true);
+  });
+
+  it('rejeita title e description vazios quando presentes', () => {
+    expect(embedSchema.safeParse({ title: '', description: 'x' }).success).toBe(false);
+    expect(embedSchema.safeParse({ title: 'x', description: '' }).success).toBe(false);
   });
 });
 

@@ -1,9 +1,8 @@
 import { z } from 'zod';
 import { messageSchema } from './schema/message';
+import { snowflakeSchema } from './snowflake';
 
-export const snowflakeSchema = z.string().regex(/^\d{17,20}$/, {
-  message: 'Must be a Discord snowflake id',
-});
+export { snowflakeSchema } from './snowflake';
 
 export const ERROR_CODES = [
   'INVALID_PAYLOAD',
@@ -50,17 +49,29 @@ export const sendMessageRequestSchema = z
         });
       }
     }
+    if (request.mode === 'webhook' && request.messageId && !request.webhookId) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['webhookId'],
+        message: 'webhookId is required to edit a webhook message',
+      });
+    }
   });
 
 export type SendMessageRequest = z.infer<typeof sendMessageRequestSchema>;
 
-export const sendMessageResponseSchema = z.object({
-  ok: z.boolean(),
-  messageId: snowflakeSchema.optional(),
-  channelId: snowflakeSchema.optional(),
-  /** Returned on webhook-mode sends so the caller can persist it for future edits. */
-  webhookId: snowflakeSchema.optional(),
-  error: sendErrorSchema.optional(),
-});
+export const sendMessageResponseSchema = z.discriminatedUnion('ok', [
+  z.object({
+    ok: z.literal(true),
+    messageId: snowflakeSchema,
+    channelId: snowflakeSchema,
+    /** Returned on webhook-mode sends so the caller can persist it for future edits. */
+    webhookId: snowflakeSchema.optional(),
+  }),
+  z.object({
+    ok: z.literal(false),
+    error: sendErrorSchema,
+  }),
+]);
 
 export type SendMessageResponse = z.infer<typeof sendMessageResponseSchema>;

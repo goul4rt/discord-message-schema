@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { LIMITS } from '../limits';
 import { embedSchema, embedTotalChars, urlSchema } from './embed';
 import { actionRowSchema } from './components';
+import { snowflakeSchema } from '../snowflake';
 
 const FORBIDDEN_USERNAME_SUBSTRINGS = ['clyde', 'discord'];
 const FORBIDDEN_USERNAME_EXACT = ['everyone', 'here'];
@@ -24,11 +25,29 @@ export const usernameSchema = z
     }
   });
 
-export const allowedMentionsSchema = z.object({
-  parse: z.array(z.enum(['users', 'roles', 'everyone'])).optional(),
-  users: z.array(z.string()).max(100).optional(),
-  roles: z.array(z.string()).max(100).optional(),
-});
+export const allowedMentionsSchema = z
+  .object({
+    parse: z.array(z.enum(['users', 'roles', 'everyone'])).optional(),
+    users: z.array(snowflakeSchema).max(100).optional(),
+    roles: z.array(snowflakeSchema).max(100).optional(),
+  })
+  .superRefine((mentions, ctx) => {
+    // Discord rejects parse flags combined with the corresponding explicit ID list.
+    if (mentions.parse?.includes('users') && (mentions.users?.length ?? 0) > 0) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['parse'],
+        message: "parse 'users' cannot be combined with an explicit users list",
+      });
+    }
+    if (mentions.parse?.includes('roles') && (mentions.roles?.length ?? 0) > 0) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['parse'],
+        message: "parse 'roles' cannot be combined with an explicit roles list",
+      });
+    }
+  });
 
 export type AllowedMentions = z.infer<typeof allowedMentionsSchema>;
 

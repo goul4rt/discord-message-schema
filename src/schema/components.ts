@@ -63,14 +63,35 @@ export const selectOptionSchema = z.object({
 });
 
 /** Reserved for the future actions feature — rejected by actionRowSchema in v1. */
-export const selectMenuSchema = z.object({
-  type: z.literal(3),
-  custom_id: z.string().min(1).max(100),
-  placeholder: z.string().max(LIMITS.SELECT_PLACEHOLDER_MAX).optional(),
-  min_values: z.number().int().min(0).max(LIMITS.SELECT_OPTIONS_MAX).optional(),
-  max_values: z.number().int().min(1).max(LIMITS.SELECT_OPTIONS_MAX).optional(),
-  options: z.array(selectOptionSchema).min(1).max(LIMITS.SELECT_OPTIONS_MAX),
-});
+export const selectMenuSchema = z
+  .object({
+    type: z.literal(3),
+    custom_id: z.string().min(1).max(100),
+    placeholder: z.string().max(LIMITS.SELECT_PLACEHOLDER_MAX).optional(),
+    min_values: z.number().int().min(0).max(LIMITS.SELECT_OPTIONS_MAX).optional(),
+    max_values: z.number().int().min(1).max(LIMITS.SELECT_OPTIONS_MAX).optional(),
+    options: z.array(selectOptionSchema).min(1).max(LIMITS.SELECT_OPTIONS_MAX),
+  })
+  .superRefine((menu, ctx) => {
+    if (
+      menu.min_values !== undefined &&
+      menu.max_values !== undefined &&
+      menu.min_values > menu.max_values
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['min_values'],
+        message: 'min_values cannot exceed max_values',
+      });
+    }
+    if (menu.max_values !== undefined && menu.max_values > menu.options.length) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['max_values'],
+        message: 'max_values cannot exceed the number of options',
+      });
+    }
+  });
 
 export const componentSchema = z.union([
   linkButtonSchema,

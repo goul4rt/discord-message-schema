@@ -44,5 +44,3 @@ export {
   type SendMessageRequest,
   type SendMessageResponse,
 } from './wire';
-export { VALID_MESSAGES, VALID_SEND_REQUESTS } from './fixtures/valid';
-export { INVALID_MESSAGES, INVALID_SEND_REQUESTS } from './fixtures/invalid';

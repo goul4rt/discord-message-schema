@@ -4,13 +4,14 @@
  */
 import { z } from 'zod';
 import { LIMITS } from '../limits';
-import { containsPlaceholder } from '../placeholders';
+
+const BARE_PLACEHOLDER = /^\{\{\s*[a-zA-Z][a-zA-Z0-9]*\s*\}\}$/;
 
 export const urlSchema = z
   .string()
   .max(LIMITS.URL_MAX)
-  .refine((v) => /^https?:\/\/.+/.test(v) || containsPlaceholder(v), {
-    message: 'Must be an http(s) URL or contain a placeholder',
+  .refine((v) => /^https?:\/\/\S+$/.test(v) || BARE_PLACEHOLDER.test(v), {
+    message: 'Must be an http(s) URL or a single placeholder token',
   });
 
 export const embedFieldSchema = z.object({
@@ -22,8 +23,8 @@ export const embedFieldSchema = z.object({
 export type EmbedField = z.infer<typeof embedFieldSchema>;
 
 const embedObjectSchema = z.object({
-  title: z.string().max(LIMITS.EMBED_TITLE_MAX).optional(),
-  description: z.string().max(LIMITS.EMBED_DESCRIPTION_MAX).optional(),
+  title: z.string().min(1).max(LIMITS.EMBED_TITLE_MAX).optional(),
+  description: z.string().min(1).max(LIMITS.EMBED_DESCRIPTION_MAX).optional(),
   url: urlSchema.optional(),
   timestamp: z.iso.datetime({ offset: true }).optional(),
   color: z.number().int().min(0).max(LIMITS.EMBED_COLOR_MAX).optional(),

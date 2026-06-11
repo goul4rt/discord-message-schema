@@ -8,6 +8,7 @@
     "url": "git+https://github.com/goul4rt/discord-message-schema.git"
   },
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -16,6 +17,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./fixtures": {
+      "types": "./dist/fixtures/index.d.ts",
+      "import": "./dist/fixtures/index.js",
+      "require": "./dist/fixtures/index.cjs"
     }
   },
   "files": ["dist", "LICENSE", "README.md"],

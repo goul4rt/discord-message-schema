@@ -54,8 +54,9 @@ const resolved = resolvePlaceholders(request.data, {
 ## Fixtures de contrato
 
 `VALID_MESSAGES`, `INVALID_MESSAGES`, `VALID_SEND_REQUESTS` e
-`INVALID_SEND_REQUESTS` são exportadas para os repos consumidores rodarem nos
-próprios testes e detectarem drift de versão.
+`INVALID_SEND_REQUESTS` são exportadas no subpath
+`@delfus/discord-message-schema/fixtures` para os repos consumidores rodarem
+nos próprios testes e detectarem drift de versão.
 
 ## Versionamento
 

@@ -72,6 +72,17 @@ describe('sendMessageRequestSchema', () => {
       sendMessageRequestSchema.safeParse({ mode: 'bot', channelId, data: {} }).success,
     ).toBe(false);
   });
+
+  it('rejeita edição webhook sem webhookId', () => {
+    expect(
+      sendMessageRequestSchema.safeParse({
+        mode: 'webhook',
+        channelId,
+        messageId: '123456789012345678',
+        data: { content: 'x' },
+      }).success,
+    ).toBe(false);
+  });
 });
 
 describe('sendMessageResponseSchema', () => {
@@ -94,6 +105,14 @@ describe('sendMessageResponseSchema', () => {
         ok: false,
         error: { code: 'NOPE', message: 'x' },
       }).success,
+    ).toBe(false);
+  });
+
+  it('rejeita estados incoerentes (ok true sem ids, ok false sem error)', () => {
+    expect(sendMessageResponseSchema.safeParse({ ok: true }).success).toBe(false);
+    expect(sendMessageResponseSchema.safeParse({ ok: false }).success).toBe(false);
+    expect(
+      sendMessageResponseSchema.safeParse({ ok: true, messageId: '123456789012345678', error: {} }).success,
     ).toBe(false);
   });
 });
