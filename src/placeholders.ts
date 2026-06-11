@@ -25,18 +25,24 @@ export type PlaceholderKey = (typeof PLACEHOLDERS)[number]['key'];
 /** Non-global on purpose: `.test()` with the `g` flag is stateful. */
 export const PLACEHOLDER_PATTERN = /\{\{\s*([a-zA-Z][a-zA-Z0-9]*)\s*\}\}/;
 
+const PLACEHOLDER_PATTERN_GLOBAL = new RegExp(PLACEHOLDER_PATTERN.source, 'g');
+
 export function containsPlaceholder(text: string): boolean {
   return PLACEHOLDER_PATTERN.test(text);
 }
 
 function resolveText(text: string, values: Record<string, string>): string {
-  return text.replace(
-    new RegExp(PLACEHOLDER_PATTERN.source, 'g'),
-    (match, key: string) => values[key] ?? match,
-  );
+  PLACEHOLDER_PATTERN_GLOBAL.lastIndex = 0;
+  return text.replace(PLACEHOLDER_PATTERN_GLOBAL, (match, key: string) => values[key] ?? match);
 }
 
-/** Deep-resolves placeholders in any JSON-like value. Returns a new value; never mutates. */
+/**
+ * Deep-resolves placeholders in any JSON-like value. Returns a new value; never mutates.
+ * Only plain JSON types are traversed (string, number, boolean, null, plain object, array);
+ * class instances (Date, Map, ...) are passed through unchanged.
+ * `values` is intentionally open (Record<string, string>): the bot may resolve
+ * context-specific placeholders beyond the published PLACEHOLDERS spec.
+ */
 export function resolvePlaceholders<T>(value: T, values: Record<string, string>): T {
   if (typeof value === 'string') {
     return resolveText(value, values) as T;
@@ -45,6 +51,9 @@ export function resolvePlaceholders<T>(value: T, values: Record<string, string>)
     return value.map((item) => resolvePlaceholders(item, values)) as T;
   }
   if (value !== null && typeof value === 'object') {
+    if (Object.getPrototypeOf(value) !== Object.prototype) {
+      return value;
+    }
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(value)) {
       out[k] = resolvePlaceholders(v, values);

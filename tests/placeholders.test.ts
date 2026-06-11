@@ -58,5 +58,16 @@ describe('resolvePlaceholders', () => {
       embeds: [{ title: '1234 membros', color: 5793266 }],
     });
     expect(input.content).toBe('Oi {{server}}');
+    expect(input.embeds[0]?.title).toBe('{{memberCount}} membros');
+  });
+
+  it('passa primitivos não-string e instâncias de classe intactos', () => {
+    expect(resolvePlaceholders({ color: 5793266, flag: true, n: null }, values)).toEqual({
+      color: 5793266,
+      flag: true,
+      n: null,
+    });
+    const date = new Date(0);
+    expect(resolvePlaceholders(date, values)).toBe(date);
   });
 });
