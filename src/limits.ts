@@ -5,6 +5,7 @@
  */
 export const LIMITS = {
   CONTENT_MAX: 2000,
+  /** Webhook username override limit (not the regular account username). */
   USERNAME_MAX: 80,
   EMBEDS_MAX: 10,
   EMBED_TITLE_MAX: 256,
