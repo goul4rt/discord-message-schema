@@ -24,6 +24,17 @@ export const LIMITS = {
   SELECT_OPTIONS_MAX: 25,
   SELECT_PLACEHOLDER_MAX: 150,
   URL_MAX: 2048,
+
+  /** Message flag `IsComponentsV2` (1 << 15). Imutável depois de enviada. */
+  FLAG_COMPONENTS_V2: 32768,
+  /** Componentes na raiz de uma mensagem V2. */
+  V2_COMPONENTS_MAX: 10,
+  V2_CONTAINER_CHILDREN_MAX: 10,
+  V2_SECTION_TEXTS_MAX: 5,
+  V2_GALLERY_ITEMS_MAX: 10,
+  V2_TEXT_DISPLAY_MAX: 4000,
+  /** Soma dos text displays de toda a árvore — análogo aos 6000 dos embeds. */
+  V2_TOTAL_CHARS_MAX: 4000,
 } as const;
 
 export type Limits = typeof LIMITS;

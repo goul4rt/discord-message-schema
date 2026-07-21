@@ -51,6 +51,21 @@ const resolved = resolvePlaceholders(request.data, {
   mas são rejeitados
 - `username`/`avatar_url` só no modo `webhook`
 
+## Components V2 (v0.2.0)
+
+Mensagem com a flag `LIMITS.FLAG_COMPONENTS_V2` (32768) troca de contrato:
+
+- **não** aceita `content` nem `embeds` — só `components`
+- raiz aceita container (17), text display (10), section (9), separator (14),
+  media gallery (12) e action row (1); até 10 componentes
+- container não aninha container (o Discord permite um nível só)
+- teto agregado de `LIMITS.V2_TOTAL_CHARS_MAX` caracteres somando todo text
+  display da árvore — use `componentsV2TotalChars()`
+
+**A flag é imutável depois de enviada.** Trocar uma mensagem de V1 para V2 (ou
+o inverso) exige apagar e repostar; `message.edit()` falha. Quem consome
+precisa comparar a flag da mensagem existente com a do payload antes de editar.
+
 ## Fixtures de contrato
 
 `VALID_MESSAGES`, `INVALID_MESSAGES`, `VALID_SEND_REQUESTS` e
