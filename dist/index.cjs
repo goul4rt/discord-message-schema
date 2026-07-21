@@ -28,20 +28,31 @@ __export(index_exports, {
   actionRowSchema: () => actionRowSchema,
   allowedMentionsSchema: () => allowedMentionsSchema,
   componentSchema: () => componentSchema,
+  componentV2Schema: () => componentV2Schema,
+  componentsV2TotalChars: () => componentsV2TotalChars,
+  containerSchema: () => containerSchema,
+  containerSubComponentSchema: () => containerSubComponentSchema,
   containsPlaceholder: () => containsPlaceholder,
   embedFieldSchema: () => embedFieldSchema,
   embedSchema: () => embedSchema,
   embedTotalChars: () => embedTotalChars,
   emojiSchema: () => emojiSchema,
+  isComponentV2: () => isComponentV2,
   linkButtonSchema: () => linkButtonSchema,
+  mediaGallerySchema: () => mediaGallerySchema,
+  mediaItemSchema: () => mediaItemSchema,
   messageSchema: () => messageSchema,
   resolvePlaceholders: () => resolvePlaceholders,
+  sectionSchema: () => sectionSchema,
   selectMenuSchema: () => selectMenuSchema,
   selectOptionSchema: () => selectOptionSchema,
   sendErrorSchema: () => sendErrorSchema,
   sendMessageRequestSchema: () => sendMessageRequestSchema,
   sendMessageResponseSchema: () => sendMessageResponseSchema,
+  separatorSchema: () => separatorSchema,
   snowflakeSchema: () => snowflakeSchema,
+  textDisplaySchema: () => textDisplaySchema,
+  thumbnailSchema: () => thumbnailSchema,
   urlSchema: () => urlSchema,
   usernameSchema: () => usernameSchema
 });
@@ -68,7 +79,17 @@ var LIMITS = {
   BUTTON_LABEL_MAX: 80,
   SELECT_OPTIONS_MAX: 25,
   SELECT_PLACEHOLDER_MAX: 150,
-  URL_MAX: 2048
+  URL_MAX: 2048,
+  /** Message flag `IsComponentsV2` (1 << 15). Imutável depois de enviada. */
+  FLAG_COMPONENTS_V2: 32768,
+  /** Componentes na raiz de uma mensagem V2. */
+  V2_COMPONENTS_MAX: 10,
+  V2_CONTAINER_CHILDREN_MAX: 10,
+  V2_SECTION_TEXTS_MAX: 5,
+  V2_GALLERY_ITEMS_MAX: 10,
+  V2_TEXT_DISPLAY_MAX: 4e3,
+  /** Soma dos text displays de toda a árvore — análogo aos 6000 dos embeds. */
+  V2_TOTAL_CHARS_MAX: 4e3
 };
 
 // src/placeholders.ts
@@ -247,19 +268,95 @@ var actionRowSchema = import_zod2.z.object({
   });
 });
 
+// src/schema/components-v2.ts
+var import_zod3 = require("zod");
+var mediaItemSchema = import_zod3.z.object({ url: urlSchema });
+var textDisplaySchema = import_zod3.z.object({
+  type: import_zod3.z.literal(10),
+  content: import_zod3.z.string().min(1).max(LIMITS.V2_TEXT_DISPLAY_MAX)
+});
+var thumbnailSchema = import_zod3.z.object({
+  type: import_zod3.z.literal(11),
+  media: mediaItemSchema,
+  description: import_zod3.z.string().max(1024).optional(),
+  spoiler: import_zod3.z.boolean().optional()
+});
+var separatorSchema = import_zod3.z.object({
+  type: import_zod3.z.literal(14),
+  divider: import_zod3.z.boolean().optional(),
+  /** 1 = pequeno, 2 = grande. */
+  spacing: import_zod3.z.union([import_zod3.z.literal(1), import_zod3.z.literal(2)]).optional()
+});
+var mediaGallerySchema = import_zod3.z.object({
+  type: import_zod3.z.literal(12),
+  items: import_zod3.z.array(
+    import_zod3.z.object({
+      media: mediaItemSchema,
+      description: import_zod3.z.string().max(1024).optional(),
+      spoiler: import_zod3.z.boolean().optional()
+    })
+  ).min(1).max(LIMITS.V2_GALLERY_ITEMS_MAX)
+});
+var sectionSchema = import_zod3.z.object({
+  type: import_zod3.z.literal(9),
+  components: import_zod3.z.array(textDisplaySchema).min(1).max(LIMITS.V2_SECTION_TEXTS_MAX),
+  accessory: thumbnailSchema
+});
+var containerSubComponentSchema = import_zod3.z.union([
+  textDisplaySchema,
+  sectionSchema,
+  separatorSchema,
+  mediaGallerySchema,
+  actionRowSchema
+]);
+var containerSchema = import_zod3.z.object({
+  type: import_zod3.z.literal(17),
+  components: import_zod3.z.array(containerSubComponentSchema).min(1).max(LIMITS.V2_CONTAINER_CHILDREN_MAX),
+  accent_color: import_zod3.z.number().int().min(0).max(LIMITS.EMBED_COLOR_MAX).optional(),
+  spoiler: import_zod3.z.boolean().optional()
+});
+var componentV2Schema = import_zod3.z.union([
+  containerSchema,
+  textDisplaySchema,
+  sectionSchema,
+  separatorSchema,
+  mediaGallerySchema,
+  actionRowSchema
+]);
+function isComponentV2(component) {
+  return component.type !== 1;
+}
+function componentsV2TotalChars(components) {
+  let total = 0;
+  for (const component of components) {
+    if (component.type === 10) total += component.content.length;
+    else if (component.type === 9) {
+      for (const text of component.components) total += text.content.length;
+    } else if (component.type === 17) {
+      for (const child of component.components) {
+        if (child.type === 10) total += child.content.length;
+        else if (child.type === 9) {
+          for (const text of child.components) total += text.content.length;
+        }
+      }
+    }
+  }
+  return total;
+}
+
 // src/schema/message.ts
-var import_zod4 = require("zod");
+var import_zod5 = require("zod");
 
 // src/snowflake.ts
-var import_zod3 = require("zod");
-var snowflakeSchema = import_zod3.z.string().regex(/^\d{17,20}$/, {
+var import_zod4 = require("zod");
+var snowflakeSchema = import_zod4.z.string().regex(/^\d{17,20}$/, {
   message: "Must be a Discord snowflake id"
 });
 
 // src/schema/message.ts
 var FORBIDDEN_USERNAME_SUBSTRINGS = ["clyde", "discord"];
 var FORBIDDEN_USERNAME_EXACT = ["everyone", "here"];
-var usernameSchema = import_zod4.z.string().min(1).max(LIMITS.USERNAME_MAX).superRefine((name, ctx) => {
+var usernameSchema = import_zod5.z.string().min(1).max(LIMITS.USERNAME_MAX).superRefine((name, ctx) => {
   const lower = name.toLowerCase();
   if (FORBIDDEN_USERNAME_SUBSTRINGS.some((s) => lower.includes(s))) {
     ctx.addIssue({ code: "custom", message: 'Username cannot contain "clyde" or "discord"' });
@@ -268,10 +365,10 @@ var usernameSchema = import_zod4.z.string().min(1).max(LIMITS.USERNAME_MAX).supe
     ctx.addIssue({ code: "custom", message: 'Username cannot be "everyone" or "here"' });
   }
 });
-var allowedMentionsSchema = import_zod4.z.object({
-  parse: import_zod4.z.array(import_zod4.z.enum(["users", "roles", "everyone"])).optional(),
-  users: import_zod4.z.array(snowflakeSchema).max(100).optional(),
-  roles: import_zod4.z.array(snowflakeSchema).max(100).optional()
+var allowedMentionsSchema = import_zod5.z.object({
+  parse: import_zod5.z.array(import_zod5.z.enum(["users", "roles", "everyone"])).optional(),
+  users: import_zod5.z.array(snowflakeSchema).max(100).optional(),
+  roles: import_zod5.z.array(snowflakeSchema).max(100).optional()
 }).superRefine((mentions, ctx) => {
   if (mentions.parse?.includes("users") && (mentions.users?.length ?? 0) > 0) {
     ctx.addIssue({
@@ -288,17 +385,77 @@ var allowedMentionsSchema = import_zod4.z.object({
     });
   }
 });
-var messageSchema = import_zod4.z.object({
-  content: import_zod4.z.string().max(LIMITS.CONTENT_MAX).optional(),
-  tts: import_zod4.z.boolean().optional(),
+var messageSchema = import_zod5.z.object({
+  content: import_zod5.z.string().max(LIMITS.CONTENT_MAX).optional(),
+  tts: import_zod5.z.boolean().optional(),
   /** Webhook mode only — sendMessageRequestSchema rejects these in bot mode. */
   username: usernameSchema.optional(),
   avatar_url: urlSchema.optional(),
-  embeds: import_zod4.z.array(embedSchema).max(LIMITS.EMBEDS_MAX).optional(),
-  components: import_zod4.z.array(actionRowSchema).max(LIMITS.ACTION_ROWS_MAX).optional(),
+  embeds: import_zod5.z.array(embedSchema).max(LIMITS.EMBEDS_MAX).optional(),
+  /**
+   * V1: action rows (máx. 5). V2: qualquer componente da raiz (máx. 10).
+   * Qual dos dois vale é decidido pela flag — ver superRefine abaixo.
+   */
+  components: import_zod5.z.array(import_zod5.z.union([actionRowSchema, componentV2Schema])).max(LIMITS.V2_COMPONENTS_MAX).optional(),
+  /**
+   * Bitfield de flags da mensagem. Só `FLAG_COMPONENTS_V2` é significativo
+   * aqui; a flag NÃO pode ser alterada por edit (trocar de modo exige
+   * apagar e repostar).
+   */
+  flags: import_zod5.z.number().int().min(0).optional(),
   allowed_mentions: allowedMentionsSchema.optional()
 }).superRefine((message, ctx) => {
-  const hasBody = !!message.content || (message.embeds?.length ?? 0) > 0 || (message.components?.length ?? 0) > 0;
+  const isV2 = ((message.flags ?? 0) & LIMITS.FLAG_COMPONENTS_V2) !== 0;
+  const components = message.components ?? [];
+  if (isV2) {
+    if (message.content) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["content"],
+        message: "Components V2 messages cannot have content"
+      });
+    }
+    if ((message.embeds?.length ?? 0) > 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["embeds"],
+        message: "Components V2 messages cannot have embeds"
+      });
+    }
+    if (components.length === 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["components"],
+        message: "Components V2 messages need at least one component"
+      });
+    }
+    const v2Chars = componentsV2TotalChars(components);
+    if (v2Chars > LIMITS.V2_TOTAL_CHARS_MAX) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["components"],
+        message: `Components exceed ${LIMITS.V2_TOTAL_CHARS_MAX} total characters (${v2Chars})`
+      });
+    }
+    return;
+  }
+  components.forEach((component, index) => {
+    if (isComponentV2(component)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["components", index],
+        message: "Components V2 require the components v2 message flag"
+      });
+    }
+  });
+  if (components.length > LIMITS.ACTION_ROWS_MAX) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["components"],
+      message: `At most ${LIMITS.ACTION_ROWS_MAX} action rows`
+    });
+  }
+  const hasBody = !!message.content || (message.embeds?.length ?? 0) > 0 || components.length > 0;
   if (!hasBody) {
     ctx.addIssue({
       code: "custom",
@@ -319,7 +476,7 @@ var messageSchema = import_zod4.z.object({
 });
 
 // src/wire.ts
-var import_zod5 = require("zod");
+var import_zod6 = require("zod");
 var ERROR_CODES = [
   "INVALID_PAYLOAD",
   "CHANNEL_NOT_FOUND",
@@ -328,14 +485,14 @@ var ERROR_CODES = [
   "WEBHOOK_CREATE_FAILED",
   "DISCORD_API_ERROR"
 ];
-var sendErrorSchema = import_zod5.z.object({
-  code: import_zod5.z.enum(ERROR_CODES),
-  message: import_zod5.z.string(),
+var sendErrorSchema = import_zod6.z.object({
+  code: import_zod6.z.enum(ERROR_CODES),
+  message: import_zod6.z.string(),
   /** Serialized Zod issues when code === 'INVALID_PAYLOAD'. */
-  issues: import_zod5.z.array(import_zod5.z.unknown()).optional()
+  issues: import_zod6.z.array(import_zod6.z.unknown()).optional()
 });
-var sendMessageRequestSchema = import_zod5.z.object({
-  mode: import_zod5.z.enum(["bot", "webhook"]),
+var sendMessageRequestSchema = import_zod6.z.object({
+  mode: import_zod6.z.enum(["bot", "webhook"]),
   channelId: snowflakeSchema,
   /** Present = edit this already-sent message instead of sending a new one. */
   messageId: snowflakeSchema.optional(),
@@ -367,16 +524,16 @@ var sendMessageRequestSchema = import_zod5.z.object({
     });
   }
 });
-var sendMessageResponseSchema = import_zod5.z.discriminatedUnion("ok", [
-  import_zod5.z.object({
-    ok: import_zod5.z.literal(true),
+var sendMessageResponseSchema = import_zod6.z.discriminatedUnion("ok", [
+  import_zod6.z.object({
+    ok: import_zod6.z.literal(true),
     messageId: snowflakeSchema,
     channelId: snowflakeSchema,
     /** Returned on webhook-mode sends so the caller can persist it for future edits. */
     webhookId: snowflakeSchema.optional()
   }),
-  import_zod5.z.object({
-    ok: import_zod5.z.literal(false),
+  import_zod6.z.object({
+    ok: import_zod6.z.literal(false),
     error: sendErrorSchema
   })
 ]);
@@ -390,20 +547,31 @@ var sendMessageResponseSchema = import_zod5.z.discriminatedUnion("ok", [
   actionRowSchema,
   allowedMentionsSchema,
   componentSchema,
+  componentV2Schema,
+  componentsV2TotalChars,
+  containerSchema,
+  containerSubComponentSchema,
   containsPlaceholder,
   embedFieldSchema,
   embedSchema,
   embedTotalChars,
   emojiSchema,
+  isComponentV2,
   linkButtonSchema,
+  mediaGallerySchema,
+  mediaItemSchema,
   messageSchema,
   resolvePlaceholders,
+  sectionSchema,
   selectMenuSchema,
   selectOptionSchema,
   sendErrorSchema,
   sendMessageRequestSchema,
   sendMessageResponseSchema,
+  separatorSchema,
   snowflakeSchema,
+  textDisplaySchema,
+  thumbnailSchema,
   urlSchema,
   usernameSchema
 });

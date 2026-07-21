@@ -28,6 +28,27 @@ export {
   type ActionRow,
 } from './schema/components';
 export {
+  mediaItemSchema,
+  textDisplaySchema,
+  thumbnailSchema,
+  separatorSchema,
+  mediaGallerySchema,
+  sectionSchema,
+  containerSubComponentSchema,
+  containerSchema,
+  componentV2Schema,
+  componentsV2TotalChars,
+  isComponentV2,
+  type MediaItem,
+  type TextDisplay,
+  type Thumbnail,
+  type Separator,
+  type MediaGallery,
+  type Section,
+  type Container,
+  type ComponentV2,
+} from './schema/components-v2';
+export {
   usernameSchema,
   allowedMentionsSchema,
   messageSchema,
