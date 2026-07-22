@@ -53,6 +53,26 @@ describe('components v2 — nós', () => {
       }).success,
     ).toBe(true);
   });
+
+  it('section aceita botão de link como acessório', () => {
+    expect(
+      sectionSchema.safeParse({
+        type: 9,
+        components: [text('oi')],
+        accessory: { type: 2, style: 5, url: 'https://exemplo.com', label: 'Abrir' },
+      }).success,
+    ).toBe(true);
+  });
+
+  it('section rejeita acessório de tipo não suportado', () => {
+    expect(
+      sectionSchema.safeParse({
+        type: 9,
+        components: [text('oi')],
+        accessory: { type: 14 },
+      }).success,
+    ).toBe(false);
+  });
 });
 
 describe('componentsV2TotalChars', () => {
