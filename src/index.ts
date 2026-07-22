@@ -65,3 +65,19 @@ export {
   type SendMessageRequest,
   type SendMessageResponse,
 } from './wire';
+export {
+  panelGateSchema,
+  panelActionSchema,
+  panelButtonSchema,
+  panelSelectOptionSchema,
+  panelSelectSchema,
+  panelComponentSchema,
+  interactivePanelSchema,
+  interactivePanelsConfigSchema,
+  type PanelGate,
+  type PanelAction,
+  type PanelButton,
+  type PanelComponent,
+  type InteractivePanel,
+  type InteractivePanelsConfig,
+} from './schema/interactive-panels';
