@@ -16,7 +16,7 @@
 import { z } from 'zod';
 import { LIMITS } from '../limits';
 import { urlSchema } from './embed';
-import { actionRowSchema } from './components';
+import { actionRowSchema, linkButtonSchema } from './components';
 
 /** `unfurled media item` da API — só a URL importa no nosso uso. */
 export const mediaItemSchema = z.object({ url: urlSchema });
@@ -65,7 +65,7 @@ export const sectionSchema = z.object({
     .array(textDisplaySchema)
     .min(1)
     .max(LIMITS.V2_SECTION_TEXTS_MAX),
-  accessory: thumbnailSchema,
+  accessory: z.union([thumbnailSchema, linkButtonSchema]),
 });
 
 /** Tudo que pode viver dentro de um container (type 17). */
