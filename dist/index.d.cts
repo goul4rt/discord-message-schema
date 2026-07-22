@@ -328,14 +328,25 @@ declare const sectionSchema: z.ZodObject<{
         type: z.ZodLiteral<10>;
         content: z.ZodString;
     }, z.core.$strip>>;
-    accessory: z.ZodObject<{
+    accessory: z.ZodUnion<readonly [z.ZodObject<{
         type: z.ZodLiteral<11>;
         media: z.ZodObject<{
             url: z.ZodString;
         }, z.core.$strip>;
         description: z.ZodOptional<z.ZodString>;
         spoiler: z.ZodOptional<z.ZodBoolean>;
-    }, z.core.$strip>;
+    }, z.core.$strip>, z.ZodObject<{
+        style: z.ZodLiteral<5>;
+        url: z.ZodString;
+        type: z.ZodLiteral<2>;
+        label: z.ZodOptional<z.ZodString>;
+        emoji: z.ZodOptional<z.ZodObject<{
+            id: z.ZodOptional<z.ZodString>;
+            name: z.ZodOptional<z.ZodString>;
+            animated: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>>;
+        disabled: z.ZodOptional<z.ZodBoolean>;
+    }, z.core.$strip>]>;
 }, z.core.$strip>;
 /** Tudo que pode viver dentro de um container (type 17). */
 declare const containerSubComponentSchema: z.ZodUnion<readonly [z.ZodObject<{
@@ -347,14 +358,25 @@ declare const containerSubComponentSchema: z.ZodUnion<readonly [z.ZodObject<{
         type: z.ZodLiteral<10>;
         content: z.ZodString;
     }, z.core.$strip>>;
-    accessory: z.ZodObject<{
+    accessory: z.ZodUnion<readonly [z.ZodObject<{
         type: z.ZodLiteral<11>;
         media: z.ZodObject<{
             url: z.ZodString;
         }, z.core.$strip>;
         description: z.ZodOptional<z.ZodString>;
         spoiler: z.ZodOptional<z.ZodBoolean>;
-    }, z.core.$strip>;
+    }, z.core.$strip>, z.ZodObject<{
+        style: z.ZodLiteral<5>;
+        url: z.ZodString;
+        type: z.ZodLiteral<2>;
+        label: z.ZodOptional<z.ZodString>;
+        emoji: z.ZodOptional<z.ZodObject<{
+            id: z.ZodOptional<z.ZodString>;
+            name: z.ZodOptional<z.ZodString>;
+            animated: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>>;
+        disabled: z.ZodOptional<z.ZodBoolean>;
+    }, z.core.$strip>]>;
 }, z.core.$strip>, z.ZodObject<{
     type: z.ZodLiteral<14>;
     divider: z.ZodOptional<z.ZodBoolean>;
@@ -423,14 +445,25 @@ declare const containerSchema: z.ZodObject<{
             type: z.ZodLiteral<10>;
             content: z.ZodString;
         }, z.core.$strip>>;
-        accessory: z.ZodObject<{
+        accessory: z.ZodUnion<readonly [z.ZodObject<{
             type: z.ZodLiteral<11>;
             media: z.ZodObject<{
                 url: z.ZodString;
             }, z.core.$strip>;
             description: z.ZodOptional<z.ZodString>;
             spoiler: z.ZodOptional<z.ZodBoolean>;
-        }, z.core.$strip>;
+        }, z.core.$strip>, z.ZodObject<{
+            style: z.ZodLiteral<5>;
+            url: z.ZodString;
+            type: z.ZodLiteral<2>;
+            label: z.ZodOptional<z.ZodString>;
+            emoji: z.ZodOptional<z.ZodObject<{
+                id: z.ZodOptional<z.ZodString>;
+                name: z.ZodOptional<z.ZodString>;
+                animated: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>;
+            disabled: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>]>;
     }, z.core.$strip>, z.ZodObject<{
         type: z.ZodLiteral<14>;
         divider: z.ZodOptional<z.ZodBoolean>;
@@ -502,14 +535,25 @@ declare const componentV2Schema: z.ZodUnion<readonly [z.ZodObject<{
             type: z.ZodLiteral<10>;
             content: z.ZodString;
         }, z.core.$strip>>;
-        accessory: z.ZodObject<{
+        accessory: z.ZodUnion<readonly [z.ZodObject<{
             type: z.ZodLiteral<11>;
             media: z.ZodObject<{
                 url: z.ZodString;
             }, z.core.$strip>;
             description: z.ZodOptional<z.ZodString>;
             spoiler: z.ZodOptional<z.ZodBoolean>;
-        }, z.core.$strip>;
+        }, z.core.$strip>, z.ZodObject<{
+            style: z.ZodLiteral<5>;
+            url: z.ZodString;
+            type: z.ZodLiteral<2>;
+            label: z.ZodOptional<z.ZodString>;
+            emoji: z.ZodOptional<z.ZodObject<{
+                id: z.ZodOptional<z.ZodString>;
+                name: z.ZodOptional<z.ZodString>;
+                animated: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>;
+            disabled: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>]>;
     }, z.core.$strip>, z.ZodObject<{
         type: z.ZodLiteral<14>;
         divider: z.ZodOptional<z.ZodBoolean>;
@@ -577,14 +621,25 @@ declare const componentV2Schema: z.ZodUnion<readonly [z.ZodObject<{
         type: z.ZodLiteral<10>;
         content: z.ZodString;
     }, z.core.$strip>>;
-    accessory: z.ZodObject<{
+    accessory: z.ZodUnion<readonly [z.ZodObject<{
         type: z.ZodLiteral<11>;
         media: z.ZodObject<{
             url: z.ZodString;
         }, z.core.$strip>;
         description: z.ZodOptional<z.ZodString>;
         spoiler: z.ZodOptional<z.ZodBoolean>;
-    }, z.core.$strip>;
+    }, z.core.$strip>, z.ZodObject<{
+        style: z.ZodLiteral<5>;
+        url: z.ZodString;
+        type: z.ZodLiteral<2>;
+        label: z.ZodOptional<z.ZodString>;
+        emoji: z.ZodOptional<z.ZodObject<{
+            id: z.ZodOptional<z.ZodString>;
+            name: z.ZodOptional<z.ZodString>;
+            animated: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>>;
+        disabled: z.ZodOptional<z.ZodBoolean>;
+    }, z.core.$strip>]>;
 }, z.core.$strip>, z.ZodObject<{
     type: z.ZodLiteral<14>;
     divider: z.ZodOptional<z.ZodBoolean>;
@@ -760,14 +815,25 @@ declare const messageSchema: z.ZodObject<{
                 type: z.ZodLiteral<10>;
                 content: z.ZodString;
             }, z.core.$strip>>;
-            accessory: z.ZodObject<{
+            accessory: z.ZodUnion<readonly [z.ZodObject<{
                 type: z.ZodLiteral<11>;
                 media: z.ZodObject<{
                     url: z.ZodString;
                 }, z.core.$strip>;
                 description: z.ZodOptional<z.ZodString>;
                 spoiler: z.ZodOptional<z.ZodBoolean>;
-            }, z.core.$strip>;
+            }, z.core.$strip>, z.ZodObject<{
+                style: z.ZodLiteral<5>;
+                url: z.ZodString;
+                type: z.ZodLiteral<2>;
+                label: z.ZodOptional<z.ZodString>;
+                emoji: z.ZodOptional<z.ZodObject<{
+                    id: z.ZodOptional<z.ZodString>;
+                    name: z.ZodOptional<z.ZodString>;
+                    animated: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+                disabled: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>]>;
         }, z.core.$strip>, z.ZodObject<{
             type: z.ZodLiteral<14>;
             divider: z.ZodOptional<z.ZodBoolean>;
@@ -835,14 +901,25 @@ declare const messageSchema: z.ZodObject<{
             type: z.ZodLiteral<10>;
             content: z.ZodString;
         }, z.core.$strip>>;
-        accessory: z.ZodObject<{
+        accessory: z.ZodUnion<readonly [z.ZodObject<{
             type: z.ZodLiteral<11>;
             media: z.ZodObject<{
                 url: z.ZodString;
             }, z.core.$strip>;
             description: z.ZodOptional<z.ZodString>;
             spoiler: z.ZodOptional<z.ZodBoolean>;
-        }, z.core.$strip>;
+        }, z.core.$strip>, z.ZodObject<{
+            style: z.ZodLiteral<5>;
+            url: z.ZodString;
+            type: z.ZodLiteral<2>;
+            label: z.ZodOptional<z.ZodString>;
+            emoji: z.ZodOptional<z.ZodObject<{
+                id: z.ZodOptional<z.ZodString>;
+                name: z.ZodOptional<z.ZodString>;
+                animated: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>;
+            disabled: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>]>;
     }, z.core.$strip>, z.ZodObject<{
         type: z.ZodLiteral<14>;
         divider: z.ZodOptional<z.ZodBoolean>;
@@ -1021,14 +1098,25 @@ declare const sendMessageRequestSchema: z.ZodObject<{
                     type: z.ZodLiteral<10>;
                     content: z.ZodString;
                 }, z.core.$strip>>;
-                accessory: z.ZodObject<{
+                accessory: z.ZodUnion<readonly [z.ZodObject<{
                     type: z.ZodLiteral<11>;
                     media: z.ZodObject<{
                         url: z.ZodString;
                     }, z.core.$strip>;
                     description: z.ZodOptional<z.ZodString>;
                     spoiler: z.ZodOptional<z.ZodBoolean>;
-                }, z.core.$strip>;
+                }, z.core.$strip>, z.ZodObject<{
+                    style: z.ZodLiteral<5>;
+                    url: z.ZodString;
+                    type: z.ZodLiteral<2>;
+                    label: z.ZodOptional<z.ZodString>;
+                    emoji: z.ZodOptional<z.ZodObject<{
+                        id: z.ZodOptional<z.ZodString>;
+                        name: z.ZodOptional<z.ZodString>;
+                        animated: z.ZodOptional<z.ZodBoolean>;
+                    }, z.core.$strip>>;
+                    disabled: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>]>;
             }, z.core.$strip>, z.ZodObject<{
                 type: z.ZodLiteral<14>;
                 divider: z.ZodOptional<z.ZodBoolean>;
@@ -1096,14 +1184,25 @@ declare const sendMessageRequestSchema: z.ZodObject<{
                 type: z.ZodLiteral<10>;
                 content: z.ZodString;
             }, z.core.$strip>>;
-            accessory: z.ZodObject<{
+            accessory: z.ZodUnion<readonly [z.ZodObject<{
                 type: z.ZodLiteral<11>;
                 media: z.ZodObject<{
                     url: z.ZodString;
                 }, z.core.$strip>;
                 description: z.ZodOptional<z.ZodString>;
                 spoiler: z.ZodOptional<z.ZodBoolean>;
-            }, z.core.$strip>;
+            }, z.core.$strip>, z.ZodObject<{
+                style: z.ZodLiteral<5>;
+                url: z.ZodString;
+                type: z.ZodLiteral<2>;
+                label: z.ZodOptional<z.ZodString>;
+                emoji: z.ZodOptional<z.ZodObject<{
+                    id: z.ZodOptional<z.ZodString>;
+                    name: z.ZodOptional<z.ZodString>;
+                    animated: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+                disabled: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>]>;
         }, z.core.$strip>, z.ZodObject<{
             type: z.ZodLiteral<14>;
             divider: z.ZodOptional<z.ZodBoolean>;
@@ -1195,4 +1294,378 @@ declare const sendMessageResponseSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
 }, z.core.$strip>], "ok">;
 type SendMessageResponse = z.infer<typeof sendMessageResponseSchema>;
 
-export { type ActionRow, type AllowedMentions, type ComponentV2, type Container, ERROR_CODES, type Embed, type EmbedField, type Emoji, LIMITS, type Limits, type LinkButton, type MediaGallery, type MediaItem, type Message, type MessageComponent, PLACEHOLDERS, PLACEHOLDER_PATTERN, type PlaceholderKey, type Section, type SendErrorCode, type SendMessageRequest, type SendMessageResponse, type Separator, type TextDisplay, type Thumbnail, actionButtonSchema, actionRowSchema, allowedMentionsSchema, componentSchema, componentV2Schema, componentsV2TotalChars, containerSchema, containerSubComponentSchema, containsPlaceholder, embedFieldSchema, embedSchema, embedTotalChars, emojiSchema, isComponentV2, linkButtonSchema, mediaGallerySchema, mediaItemSchema, messageSchema, resolvePlaceholders, sectionSchema, selectMenuSchema, selectOptionSchema, sendErrorSchema, sendMessageRequestSchema, sendMessageResponseSchema, separatorSchema, snowflakeSchema, textDisplaySchema, thumbnailSchema, urlSchema, usernameSchema };
+/**
+ * Painéis interativos (SP2). Config persistida em `GuildConfig.interactivePanels`
+ * (Json): o bot lê e executa, o painel web escreve. Cada componente carrega UMA
+ * ação + um gate de permissão opcional (sem action-sets — ver spec SP2).
+ */
+
+/** "Só estes cargos podem usar este componente." */
+declare const panelGateSchema: z.ZodObject<{
+    allowedRoleIds: z.ZodArray<z.ZodString>;
+    denyMessage: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+declare const panelActionSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
+    kind: z.ZodLiteral<"reply_text">;
+    text: z.ZodString;
+    ephemeral: z.ZodDefault<z.ZodBoolean>;
+}, z.core.$strip>, z.ZodObject<{
+    kind: z.ZodLiteral<"role">;
+    roleId: z.ZodString;
+    mode: z.ZodDefault<z.ZodEnum<{
+        toggle: "toggle";
+        add: "add";
+        remove: "remove";
+    }>>;
+}, z.core.$strip>, z.ZodObject<{
+    kind: z.ZodLiteral<"saved_msg">;
+    customResponseId: z.ZodString;
+    ephemeral: z.ZodDefault<z.ZodBoolean>;
+}, z.core.$strip>], "kind">;
+declare const panelButtonSchema: z.ZodObject<{
+    id: z.ZodString;
+    type: z.ZodLiteral<"button">;
+    label: z.ZodString;
+    emoji: z.ZodOptional<z.ZodObject<{
+        id: z.ZodOptional<z.ZodString>;
+        name: z.ZodOptional<z.ZodString>;
+        animated: z.ZodOptional<z.ZodBoolean>;
+    }, z.core.$strip>>;
+    style: z.ZodDefault<z.ZodEnum<{
+        success: "success";
+        primary: "primary";
+        secondary: "secondary";
+        danger: "danger";
+    }>>;
+    gate: z.ZodOptional<z.ZodObject<{
+        allowedRoleIds: z.ZodArray<z.ZodString>;
+        denyMessage: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+    action: z.ZodDiscriminatedUnion<[z.ZodObject<{
+        kind: z.ZodLiteral<"reply_text">;
+        text: z.ZodString;
+        ephemeral: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>, z.ZodObject<{
+        kind: z.ZodLiteral<"role">;
+        roleId: z.ZodString;
+        mode: z.ZodDefault<z.ZodEnum<{
+            toggle: "toggle";
+            add: "add";
+            remove: "remove";
+        }>>;
+    }, z.core.$strip>, z.ZodObject<{
+        kind: z.ZodLiteral<"saved_msg">;
+        customResponseId: z.ZodString;
+        ephemeral: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>], "kind">;
+}, z.core.$strip>;
+declare const panelSelectOptionSchema: z.ZodObject<{
+    id: z.ZodString;
+    label: z.ZodString;
+    description: z.ZodOptional<z.ZodString>;
+    emoji: z.ZodOptional<z.ZodObject<{
+        id: z.ZodOptional<z.ZodString>;
+        name: z.ZodOptional<z.ZodString>;
+        animated: z.ZodOptional<z.ZodBoolean>;
+    }, z.core.$strip>>;
+    gate: z.ZodOptional<z.ZodObject<{
+        allowedRoleIds: z.ZodArray<z.ZodString>;
+        denyMessage: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+    action: z.ZodDiscriminatedUnion<[z.ZodObject<{
+        kind: z.ZodLiteral<"reply_text">;
+        text: z.ZodString;
+        ephemeral: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>, z.ZodObject<{
+        kind: z.ZodLiteral<"role">;
+        roleId: z.ZodString;
+        mode: z.ZodDefault<z.ZodEnum<{
+            toggle: "toggle";
+            add: "add";
+            remove: "remove";
+        }>>;
+    }, z.core.$strip>, z.ZodObject<{
+        kind: z.ZodLiteral<"saved_msg">;
+        customResponseId: z.ZodString;
+        ephemeral: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>], "kind">;
+}, z.core.$strip>;
+declare const panelSelectSchema: z.ZodObject<{
+    id: z.ZodString;
+    type: z.ZodLiteral<"select">;
+    placeholder: z.ZodOptional<z.ZodString>;
+    options: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        label: z.ZodString;
+        description: z.ZodOptional<z.ZodString>;
+        emoji: z.ZodOptional<z.ZodObject<{
+            id: z.ZodOptional<z.ZodString>;
+            name: z.ZodOptional<z.ZodString>;
+            animated: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>>;
+        gate: z.ZodOptional<z.ZodObject<{
+            allowedRoleIds: z.ZodArray<z.ZodString>;
+            denyMessage: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>>;
+        action: z.ZodDiscriminatedUnion<[z.ZodObject<{
+            kind: z.ZodLiteral<"reply_text">;
+            text: z.ZodString;
+            ephemeral: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"role">;
+            roleId: z.ZodString;
+            mode: z.ZodDefault<z.ZodEnum<{
+                toggle: "toggle";
+                add: "add";
+                remove: "remove";
+            }>>;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"saved_msg">;
+            customResponseId: z.ZodString;
+            ephemeral: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>], "kind">;
+    }, z.core.$strip>>;
+}, z.core.$strip>;
+declare const panelComponentSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
+    id: z.ZodString;
+    type: z.ZodLiteral<"button">;
+    label: z.ZodString;
+    emoji: z.ZodOptional<z.ZodObject<{
+        id: z.ZodOptional<z.ZodString>;
+        name: z.ZodOptional<z.ZodString>;
+        animated: z.ZodOptional<z.ZodBoolean>;
+    }, z.core.$strip>>;
+    style: z.ZodDefault<z.ZodEnum<{
+        success: "success";
+        primary: "primary";
+        secondary: "secondary";
+        danger: "danger";
+    }>>;
+    gate: z.ZodOptional<z.ZodObject<{
+        allowedRoleIds: z.ZodArray<z.ZodString>;
+        denyMessage: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+    action: z.ZodDiscriminatedUnion<[z.ZodObject<{
+        kind: z.ZodLiteral<"reply_text">;
+        text: z.ZodString;
+        ephemeral: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>, z.ZodObject<{
+        kind: z.ZodLiteral<"role">;
+        roleId: z.ZodString;
+        mode: z.ZodDefault<z.ZodEnum<{
+            toggle: "toggle";
+            add: "add";
+            remove: "remove";
+        }>>;
+    }, z.core.$strip>, z.ZodObject<{
+        kind: z.ZodLiteral<"saved_msg">;
+        customResponseId: z.ZodString;
+        ephemeral: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>], "kind">;
+}, z.core.$strip>, z.ZodObject<{
+    id: z.ZodString;
+    type: z.ZodLiteral<"select">;
+    placeholder: z.ZodOptional<z.ZodString>;
+    options: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        label: z.ZodString;
+        description: z.ZodOptional<z.ZodString>;
+        emoji: z.ZodOptional<z.ZodObject<{
+            id: z.ZodOptional<z.ZodString>;
+            name: z.ZodOptional<z.ZodString>;
+            animated: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>>;
+        gate: z.ZodOptional<z.ZodObject<{
+            allowedRoleIds: z.ZodArray<z.ZodString>;
+            denyMessage: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>>;
+        action: z.ZodDiscriminatedUnion<[z.ZodObject<{
+            kind: z.ZodLiteral<"reply_text">;
+            text: z.ZodString;
+            ephemeral: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"role">;
+            roleId: z.ZodString;
+            mode: z.ZodDefault<z.ZodEnum<{
+                toggle: "toggle";
+                add: "add";
+                remove: "remove";
+            }>>;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"saved_msg">;
+            customResponseId: z.ZodString;
+            ephemeral: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>], "kind">;
+    }, z.core.$strip>>;
+}, z.core.$strip>], "type">;
+declare const interactivePanelSchema: z.ZodObject<{
+    id: z.ZodString;
+    name: z.ZodString;
+    enabled: z.ZodDefault<z.ZodBoolean>;
+    channelId: z.ZodString;
+    messageId: z.ZodOptional<z.ZodString>;
+    content: z.ZodOptional<z.ZodString>;
+    components: z.ZodArray<z.ZodDiscriminatedUnion<[z.ZodObject<{
+        id: z.ZodString;
+        type: z.ZodLiteral<"button">;
+        label: z.ZodString;
+        emoji: z.ZodOptional<z.ZodObject<{
+            id: z.ZodOptional<z.ZodString>;
+            name: z.ZodOptional<z.ZodString>;
+            animated: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>>;
+        style: z.ZodDefault<z.ZodEnum<{
+            success: "success";
+            primary: "primary";
+            secondary: "secondary";
+            danger: "danger";
+        }>>;
+        gate: z.ZodOptional<z.ZodObject<{
+            allowedRoleIds: z.ZodArray<z.ZodString>;
+            denyMessage: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>>;
+        action: z.ZodDiscriminatedUnion<[z.ZodObject<{
+            kind: z.ZodLiteral<"reply_text">;
+            text: z.ZodString;
+            ephemeral: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"role">;
+            roleId: z.ZodString;
+            mode: z.ZodDefault<z.ZodEnum<{
+                toggle: "toggle";
+                add: "add";
+                remove: "remove";
+            }>>;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"saved_msg">;
+            customResponseId: z.ZodString;
+            ephemeral: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>], "kind">;
+    }, z.core.$strip>, z.ZodObject<{
+        id: z.ZodString;
+        type: z.ZodLiteral<"select">;
+        placeholder: z.ZodOptional<z.ZodString>;
+        options: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            label: z.ZodString;
+            description: z.ZodOptional<z.ZodString>;
+            emoji: z.ZodOptional<z.ZodObject<{
+                id: z.ZodOptional<z.ZodString>;
+                name: z.ZodOptional<z.ZodString>;
+                animated: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>;
+            gate: z.ZodOptional<z.ZodObject<{
+                allowedRoleIds: z.ZodArray<z.ZodString>;
+                denyMessage: z.ZodOptional<z.ZodString>;
+            }, z.core.$strip>>;
+            action: z.ZodDiscriminatedUnion<[z.ZodObject<{
+                kind: z.ZodLiteral<"reply_text">;
+                text: z.ZodString;
+                ephemeral: z.ZodDefault<z.ZodBoolean>;
+            }, z.core.$strip>, z.ZodObject<{
+                kind: z.ZodLiteral<"role">;
+                roleId: z.ZodString;
+                mode: z.ZodDefault<z.ZodEnum<{
+                    toggle: "toggle";
+                    add: "add";
+                    remove: "remove";
+                }>>;
+            }, z.core.$strip>, z.ZodObject<{
+                kind: z.ZodLiteral<"saved_msg">;
+                customResponseId: z.ZodString;
+                ephemeral: z.ZodDefault<z.ZodBoolean>;
+            }, z.core.$strip>], "kind">;
+        }, z.core.$strip>>;
+    }, z.core.$strip>], "type">>;
+}, z.core.$strip>;
+declare const interactivePanelsConfigSchema: z.ZodObject<{
+    enabled: z.ZodDefault<z.ZodBoolean>;
+    panels: z.ZodDefault<z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        name: z.ZodString;
+        enabled: z.ZodDefault<z.ZodBoolean>;
+        channelId: z.ZodString;
+        messageId: z.ZodOptional<z.ZodString>;
+        content: z.ZodOptional<z.ZodString>;
+        components: z.ZodArray<z.ZodDiscriminatedUnion<[z.ZodObject<{
+            id: z.ZodString;
+            type: z.ZodLiteral<"button">;
+            label: z.ZodString;
+            emoji: z.ZodOptional<z.ZodObject<{
+                id: z.ZodOptional<z.ZodString>;
+                name: z.ZodOptional<z.ZodString>;
+                animated: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>;
+            style: z.ZodDefault<z.ZodEnum<{
+                success: "success";
+                primary: "primary";
+                secondary: "secondary";
+                danger: "danger";
+            }>>;
+            gate: z.ZodOptional<z.ZodObject<{
+                allowedRoleIds: z.ZodArray<z.ZodString>;
+                denyMessage: z.ZodOptional<z.ZodString>;
+            }, z.core.$strip>>;
+            action: z.ZodDiscriminatedUnion<[z.ZodObject<{
+                kind: z.ZodLiteral<"reply_text">;
+                text: z.ZodString;
+                ephemeral: z.ZodDefault<z.ZodBoolean>;
+            }, z.core.$strip>, z.ZodObject<{
+                kind: z.ZodLiteral<"role">;
+                roleId: z.ZodString;
+                mode: z.ZodDefault<z.ZodEnum<{
+                    toggle: "toggle";
+                    add: "add";
+                    remove: "remove";
+                }>>;
+            }, z.core.$strip>, z.ZodObject<{
+                kind: z.ZodLiteral<"saved_msg">;
+                customResponseId: z.ZodString;
+                ephemeral: z.ZodDefault<z.ZodBoolean>;
+            }, z.core.$strip>], "kind">;
+        }, z.core.$strip>, z.ZodObject<{
+            id: z.ZodString;
+            type: z.ZodLiteral<"select">;
+            placeholder: z.ZodOptional<z.ZodString>;
+            options: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                label: z.ZodString;
+                description: z.ZodOptional<z.ZodString>;
+                emoji: z.ZodOptional<z.ZodObject<{
+                    id: z.ZodOptional<z.ZodString>;
+                    name: z.ZodOptional<z.ZodString>;
+                    animated: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+                gate: z.ZodOptional<z.ZodObject<{
+                    allowedRoleIds: z.ZodArray<z.ZodString>;
+                    denyMessage: z.ZodOptional<z.ZodString>;
+                }, z.core.$strip>>;
+                action: z.ZodDiscriminatedUnion<[z.ZodObject<{
+                    kind: z.ZodLiteral<"reply_text">;
+                    text: z.ZodString;
+                    ephemeral: z.ZodDefault<z.ZodBoolean>;
+                }, z.core.$strip>, z.ZodObject<{
+                    kind: z.ZodLiteral<"role">;
+                    roleId: z.ZodString;
+                    mode: z.ZodDefault<z.ZodEnum<{
+                        toggle: "toggle";
+                        add: "add";
+                        remove: "remove";
+                    }>>;
+                }, z.core.$strip>, z.ZodObject<{
+                    kind: z.ZodLiteral<"saved_msg">;
+                    customResponseId: z.ZodString;
+                    ephemeral: z.ZodDefault<z.ZodBoolean>;
+                }, z.core.$strip>], "kind">;
+            }, z.core.$strip>>;
+        }, z.core.$strip>], "type">>;
+    }, z.core.$strip>>>;
+}, z.core.$strip>;
+type PanelGate = z.infer<typeof panelGateSchema>;
+type PanelAction = z.infer<typeof panelActionSchema>;
+type PanelButton = z.infer<typeof panelButtonSchema>;
+type PanelComponent = z.infer<typeof panelComponentSchema>;
+type InteractivePanel = z.infer<typeof interactivePanelSchema>;
+type InteractivePanelsConfig = z.infer<typeof interactivePanelsConfigSchema>;
+
+export { type ActionRow, type AllowedMentions, type ComponentV2, type Container, ERROR_CODES, type Embed, type EmbedField, type Emoji, type InteractivePanel, type InteractivePanelsConfig, LIMITS, type Limits, type LinkButton, type MediaGallery, type MediaItem, type Message, type MessageComponent, PLACEHOLDERS, PLACEHOLDER_PATTERN, type PanelAction, type PanelButton, type PanelComponent, type PanelGate, type PlaceholderKey, type Section, type SendErrorCode, type SendMessageRequest, type SendMessageResponse, type Separator, type TextDisplay, type Thumbnail, actionButtonSchema, actionRowSchema, allowedMentionsSchema, componentSchema, componentV2Schema, componentsV2TotalChars, containerSchema, containerSubComponentSchema, containsPlaceholder, embedFieldSchema, embedSchema, embedTotalChars, emojiSchema, interactivePanelSchema, interactivePanelsConfigSchema, isComponentV2, linkButtonSchema, mediaGallerySchema, mediaItemSchema, messageSchema, panelActionSchema, panelButtonSchema, panelComponentSchema, panelGateSchema, panelSelectOptionSchema, panelSelectSchema, resolvePlaceholders, sectionSchema, selectMenuSchema, selectOptionSchema, sendErrorSchema, sendMessageRequestSchema, sendMessageResponseSchema, separatorSchema, snowflakeSchema, textDisplaySchema, thumbnailSchema, urlSchema, usernameSchema };

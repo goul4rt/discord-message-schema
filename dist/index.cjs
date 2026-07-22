@@ -37,11 +37,19 @@ __export(index_exports, {
   embedSchema: () => embedSchema,
   embedTotalChars: () => embedTotalChars,
   emojiSchema: () => emojiSchema,
+  interactivePanelSchema: () => interactivePanelSchema,
+  interactivePanelsConfigSchema: () => interactivePanelsConfigSchema,
   isComponentV2: () => isComponentV2,
   linkButtonSchema: () => linkButtonSchema,
   mediaGallerySchema: () => mediaGallerySchema,
   mediaItemSchema: () => mediaItemSchema,
   messageSchema: () => messageSchema,
+  panelActionSchema: () => panelActionSchema,
+  panelButtonSchema: () => panelButtonSchema,
+  panelComponentSchema: () => panelComponentSchema,
+  panelGateSchema: () => panelGateSchema,
+  panelSelectOptionSchema: () => panelSelectOptionSchema,
+  panelSelectSchema: () => panelSelectSchema,
   resolvePlaceholders: () => resolvePlaceholders,
   sectionSchema: () => sectionSchema,
   selectMenuSchema: () => selectMenuSchema,
@@ -300,7 +308,7 @@ var mediaGallerySchema = import_zod3.z.object({
 var sectionSchema = import_zod3.z.object({
   type: import_zod3.z.literal(9),
   components: import_zod3.z.array(textDisplaySchema).min(1).max(LIMITS.V2_SECTION_TEXTS_MAX),
-  accessory: thumbnailSchema
+  accessory: import_zod3.z.union([thumbnailSchema, linkButtonSchema])
 });
 var containerSubComponentSchema = import_zod3.z.union([
   textDisplaySchema,
@@ -537,6 +545,74 @@ var sendMessageResponseSchema = import_zod6.z.discriminatedUnion("ok", [
     error: sendErrorSchema
   })
 ]);
+
+// src/schema/interactive-panels.ts
+var import_zod7 = require("zod");
+var panelGateSchema = import_zod7.z.object({
+  allowedRoleIds: import_zod7.z.array(snowflakeSchema).min(1),
+  denyMessage: import_zod7.z.string().max(2e3).optional()
+});
+var replyTextActionSchema = import_zod7.z.object({
+  kind: import_zod7.z.literal("reply_text"),
+  text: import_zod7.z.string().min(1).max(2e3),
+  ephemeral: import_zod7.z.boolean().default(true)
+});
+var roleActionSchema = import_zod7.z.object({
+  kind: import_zod7.z.literal("role"),
+  roleId: snowflakeSchema,
+  mode: import_zod7.z.enum(["toggle", "add", "remove"]).default("toggle")
+});
+var savedMsgActionSchema = import_zod7.z.object({
+  kind: import_zod7.z.literal("saved_msg"),
+  customResponseId: import_zod7.z.string().min(1),
+  ephemeral: import_zod7.z.boolean().default(true)
+});
+var panelActionSchema = import_zod7.z.discriminatedUnion("kind", [
+  replyTextActionSchema,
+  roleActionSchema,
+  savedMsgActionSchema
+]);
+var BUTTON_STYLES = ["primary", "secondary", "success", "danger"];
+var panelButtonSchema = import_zod7.z.object({
+  id: import_zod7.z.string().min(1),
+  type: import_zod7.z.literal("button"),
+  label: import_zod7.z.string().min(1).max(80),
+  emoji: emojiSchema.optional(),
+  style: import_zod7.z.enum(BUTTON_STYLES).default("secondary"),
+  gate: panelGateSchema.optional(),
+  action: panelActionSchema
+});
+var panelSelectOptionSchema = import_zod7.z.object({
+  id: import_zod7.z.string().min(1),
+  label: import_zod7.z.string().min(1).max(100),
+  description: import_zod7.z.string().max(100).optional(),
+  emoji: emojiSchema.optional(),
+  gate: panelGateSchema.optional(),
+  action: panelActionSchema
+});
+var panelSelectSchema = import_zod7.z.object({
+  id: import_zod7.z.string().min(1),
+  type: import_zod7.z.literal("select"),
+  placeholder: import_zod7.z.string().max(150).optional(),
+  options: import_zod7.z.array(panelSelectOptionSchema).min(1).max(25)
+});
+var panelComponentSchema = import_zod7.z.discriminatedUnion("type", [
+  panelButtonSchema,
+  panelSelectSchema
+]);
+var interactivePanelSchema = import_zod7.z.object({
+  id: import_zod7.z.string().min(1),
+  name: import_zod7.z.string().min(1).max(100),
+  enabled: import_zod7.z.boolean().default(true),
+  channelId: snowflakeSchema,
+  messageId: snowflakeSchema.optional(),
+  content: import_zod7.z.string().max(2e3).optional(),
+  components: import_zod7.z.array(panelComponentSchema).min(1).max(40)
+});
+var interactivePanelsConfigSchema = import_zod7.z.object({
+  enabled: import_zod7.z.boolean().default(false),
+  panels: import_zod7.z.array(interactivePanelSchema).default([])
+});
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ERROR_CODES,
@@ -556,11 +632,19 @@ var sendMessageResponseSchema = import_zod6.z.discriminatedUnion("ok", [
   embedSchema,
   embedTotalChars,
   emojiSchema,
+  interactivePanelSchema,
+  interactivePanelsConfigSchema,
   isComponentV2,
   linkButtonSchema,
   mediaGallerySchema,
   mediaItemSchema,
   messageSchema,
+  panelActionSchema,
+  panelButtonSchema,
+  panelComponentSchema,
+  panelGateSchema,
+  panelSelectOptionSchema,
+  panelSelectSchema,
   resolvePlaceholders,
   sectionSchema,
   selectMenuSchema,

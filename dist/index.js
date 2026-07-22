@@ -240,7 +240,7 @@ var mediaGallerySchema = z3.object({
 var sectionSchema = z3.object({
   type: z3.literal(9),
   components: z3.array(textDisplaySchema).min(1).max(LIMITS.V2_SECTION_TEXTS_MAX),
-  accessory: thumbnailSchema
+  accessory: z3.union([thumbnailSchema, linkButtonSchema])
 });
 var containerSubComponentSchema = z3.union([
   textDisplaySchema,
@@ -477,6 +477,74 @@ var sendMessageResponseSchema = z6.discriminatedUnion("ok", [
     error: sendErrorSchema
   })
 ]);
+
+// src/schema/interactive-panels.ts
+import { z as z7 } from "zod";
+var panelGateSchema = z7.object({
+  allowedRoleIds: z7.array(snowflakeSchema).min(1),
+  denyMessage: z7.string().max(2e3).optional()
+});
+var replyTextActionSchema = z7.object({
+  kind: z7.literal("reply_text"),
+  text: z7.string().min(1).max(2e3),
+  ephemeral: z7.boolean().default(true)
+});
+var roleActionSchema = z7.object({
+  kind: z7.literal("role"),
+  roleId: snowflakeSchema,
+  mode: z7.enum(["toggle", "add", "remove"]).default("toggle")
+});
+var savedMsgActionSchema = z7.object({
+  kind: z7.literal("saved_msg"),
+  customResponseId: z7.string().min(1),
+  ephemeral: z7.boolean().default(true)
+});
+var panelActionSchema = z7.discriminatedUnion("kind", [
+  replyTextActionSchema,
+  roleActionSchema,
+  savedMsgActionSchema
+]);
+var BUTTON_STYLES = ["primary", "secondary", "success", "danger"];
+var panelButtonSchema = z7.object({
+  id: z7.string().min(1),
+  type: z7.literal("button"),
+  label: z7.string().min(1).max(80),
+  emoji: emojiSchema.optional(),
+  style: z7.enum(BUTTON_STYLES).default("secondary"),
+  gate: panelGateSchema.optional(),
+  action: panelActionSchema
+});
+var panelSelectOptionSchema = z7.object({
+  id: z7.string().min(1),
+  label: z7.string().min(1).max(100),
+  description: z7.string().max(100).optional(),
+  emoji: emojiSchema.optional(),
+  gate: panelGateSchema.optional(),
+  action: panelActionSchema
+});
+var panelSelectSchema = z7.object({
+  id: z7.string().min(1),
+  type: z7.literal("select"),
+  placeholder: z7.string().max(150).optional(),
+  options: z7.array(panelSelectOptionSchema).min(1).max(25)
+});
+var panelComponentSchema = z7.discriminatedUnion("type", [
+  panelButtonSchema,
+  panelSelectSchema
+]);
+var interactivePanelSchema = z7.object({
+  id: z7.string().min(1),
+  name: z7.string().min(1).max(100),
+  enabled: z7.boolean().default(true),
+  channelId: snowflakeSchema,
+  messageId: snowflakeSchema.optional(),
+  content: z7.string().max(2e3).optional(),
+  components: z7.array(panelComponentSchema).min(1).max(40)
+});
+var interactivePanelsConfigSchema = z7.object({
+  enabled: z7.boolean().default(false),
+  panels: z7.array(interactivePanelSchema).default([])
+});
 export {
   ERROR_CODES,
   LIMITS,
@@ -495,11 +563,19 @@ export {
   embedSchema,
   embedTotalChars,
   emojiSchema,
+  interactivePanelSchema,
+  interactivePanelsConfigSchema,
   isComponentV2,
   linkButtonSchema,
   mediaGallerySchema,
   mediaItemSchema,
   messageSchema,
+  panelActionSchema,
+  panelButtonSchema,
+  panelComponentSchema,
+  panelGateSchema,
+  panelSelectOptionSchema,
+  panelSelectSchema,
   resolvePlaceholders,
   sectionSchema,
   selectMenuSchema,
