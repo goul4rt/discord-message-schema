@@ -6,6 +6,7 @@
 import { z } from 'zod';
 import { snowflakeSchema } from '../snowflake';
 import { emojiSchema } from './components';
+import { embedSchema } from './embed';
 
 /** "Só estes cargos podem usar este componente." */
 export const panelGateSchema = z.object({
@@ -77,6 +78,7 @@ export const interactivePanelSchema = z.object({
   channelId: snowflakeSchema,
   messageId: snowflakeSchema.optional(),
   content: z.string().max(2000).optional(),
+  embed: embedSchema.optional(),
   components: z.array(panelComponentSchema).min(1).max(40),
 });
 
