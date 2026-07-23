@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   interactivePanelsConfigSchema,
   panelActionSchema,
+  interactivePanelSchema,
 } from '../src/schema/interactive-panels';
+import { embedSchema } from '../src/schema/embed';
 
 const ROLE = '123456789012345678';
 
@@ -53,5 +55,39 @@ describe('interactivePanelsConfigSchema', () => {
     const parsed = interactivePanelsConfigSchema.parse({});
     expect(parsed.enabled).toBe(false);
     expect(parsed.panels).toEqual([]);
+  });
+});
+
+describe('interactivePanelSchema com embed', () => {
+  it('aceita um painel com embed no corpo', () => {
+    const panel = {
+      id: 'p1',
+      name: 'X',
+      enabled: true,
+      channelId: ROLE,
+      components: [{ id: 'b1', type: 'button', label: 'Ok', action: { kind: 'reply_text', text: 'oi' } }],
+      embed: { title: 'Olá', description: 'corpo' },
+    };
+    const result = interactivePanelSchema.safeParse(panel);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.embed).toBeDefined();
+      expect(result.data.embed?.title).toBe('Olá');
+    }
+  });
+
+  it('painel sem embed continua válido (backward-compat)', () => {
+    const panel = {
+      id: 'p1',
+      name: 'X',
+      enabled: true,
+      channelId: ROLE,
+      components: [{ id: 'b1', type: 'button', label: 'Ok', action: { kind: 'reply_text', text: 'oi' } }],
+    };
+    const result = interactivePanelSchema.safeParse(panel);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.embed).toBeUndefined();
+    }
   });
 });

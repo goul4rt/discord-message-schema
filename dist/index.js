@@ -539,6 +539,7 @@ var interactivePanelSchema = z7.object({
   channelId: snowflakeSchema,
   messageId: snowflakeSchema.optional(),
   content: z7.string().max(2e3).optional(),
+  embed: embedSchema.optional(),
   components: z7.array(panelComponentSchema).min(1).max(40)
 });
 var interactivePanelsConfigSchema = z7.object({

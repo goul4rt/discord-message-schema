@@ -607,6 +607,7 @@ var interactivePanelSchema = import_zod7.z.object({
   channelId: snowflakeSchema,
   messageId: snowflakeSchema.optional(),
   content: import_zod7.z.string().max(2e3).optional(),
+  embed: embedSchema.optional(),
   components: import_zod7.z.array(panelComponentSchema).min(1).max(40)
 });
 var interactivePanelsConfigSchema = import_zod7.z.object({
