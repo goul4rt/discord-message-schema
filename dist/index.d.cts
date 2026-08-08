@@ -1321,6 +1321,10 @@ declare const panelActionSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
     kind: z.ZodLiteral<"saved_msg">;
     customResponseId: z.ZodString;
     ephemeral: z.ZodDefault<z.ZodBoolean>;
+}, z.core.$strip>, z.ZodObject<{
+    kind: z.ZodLiteral<"saved_message">;
+    savedMessageId: z.ZodString;
+    ephemeral: z.ZodDefault<z.ZodBoolean>;
 }, z.core.$strip>], "kind">;
 declare const panelButtonSchema: z.ZodObject<{
     id: z.ZodString;
@@ -1357,6 +1361,10 @@ declare const panelButtonSchema: z.ZodObject<{
         kind: z.ZodLiteral<"saved_msg">;
         customResponseId: z.ZodString;
         ephemeral: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>, z.ZodObject<{
+        kind: z.ZodLiteral<"saved_message">;
+        savedMessageId: z.ZodString;
+        ephemeral: z.ZodDefault<z.ZodBoolean>;
     }, z.core.$strip>], "kind">;
 }, z.core.$strip>;
 declare const panelSelectOptionSchema: z.ZodObject<{
@@ -1387,6 +1395,10 @@ declare const panelSelectOptionSchema: z.ZodObject<{
     }, z.core.$strip>, z.ZodObject<{
         kind: z.ZodLiteral<"saved_msg">;
         customResponseId: z.ZodString;
+        ephemeral: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>, z.ZodObject<{
+        kind: z.ZodLiteral<"saved_message">;
+        savedMessageId: z.ZodString;
         ephemeral: z.ZodDefault<z.ZodBoolean>;
     }, z.core.$strip>], "kind">;
 }, z.core.$strip>;
@@ -1422,6 +1434,10 @@ declare const panelSelectSchema: z.ZodObject<{
         }, z.core.$strip>, z.ZodObject<{
             kind: z.ZodLiteral<"saved_msg">;
             customResponseId: z.ZodString;
+            ephemeral: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"saved_message">;
+            savedMessageId: z.ZodString;
             ephemeral: z.ZodDefault<z.ZodBoolean>;
         }, z.core.$strip>], "kind">;
     }, z.core.$strip>>;
@@ -1461,6 +1477,10 @@ declare const panelComponentSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
         kind: z.ZodLiteral<"saved_msg">;
         customResponseId: z.ZodString;
         ephemeral: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>, z.ZodObject<{
+        kind: z.ZodLiteral<"saved_message">;
+        savedMessageId: z.ZodString;
+        ephemeral: z.ZodDefault<z.ZodBoolean>;
     }, z.core.$strip>], "kind">;
 }, z.core.$strip>, z.ZodObject<{
     id: z.ZodString;
@@ -1494,6 +1514,10 @@ declare const panelComponentSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
         }, z.core.$strip>, z.ZodObject<{
             kind: z.ZodLiteral<"saved_msg">;
             customResponseId: z.ZodString;
+            ephemeral: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"saved_message">;
+            savedMessageId: z.ZodString;
             ephemeral: z.ZodDefault<z.ZodBoolean>;
         }, z.core.$strip>], "kind">;
     }, z.core.$strip>>;
@@ -1567,6 +1591,10 @@ declare const interactivePanelSchema: z.ZodObject<{
             kind: z.ZodLiteral<"saved_msg">;
             customResponseId: z.ZodString;
             ephemeral: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"saved_message">;
+            savedMessageId: z.ZodString;
+            ephemeral: z.ZodDefault<z.ZodBoolean>;
         }, z.core.$strip>], "kind">;
     }, z.core.$strip>, z.ZodObject<{
         id: z.ZodString;
@@ -1600,6 +1628,10 @@ declare const interactivePanelSchema: z.ZodObject<{
             }, z.core.$strip>, z.ZodObject<{
                 kind: z.ZodLiteral<"saved_msg">;
                 customResponseId: z.ZodString;
+                ephemeral: z.ZodDefault<z.ZodBoolean>;
+            }, z.core.$strip>, z.ZodObject<{
+                kind: z.ZodLiteral<"saved_message">;
+                savedMessageId: z.ZodString;
                 ephemeral: z.ZodDefault<z.ZodBoolean>;
             }, z.core.$strip>], "kind">;
         }, z.core.$strip>>;
@@ -1676,6 +1708,10 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
                 kind: z.ZodLiteral<"saved_msg">;
                 customResponseId: z.ZodString;
                 ephemeral: z.ZodDefault<z.ZodBoolean>;
+            }, z.core.$strip>, z.ZodObject<{
+                kind: z.ZodLiteral<"saved_message">;
+                savedMessageId: z.ZodString;
+                ephemeral: z.ZodDefault<z.ZodBoolean>;
             }, z.core.$strip>], "kind">;
         }, z.core.$strip>, z.ZodObject<{
             id: z.ZodString;
@@ -1709,6 +1745,10 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
                 }, z.core.$strip>, z.ZodObject<{
                     kind: z.ZodLiteral<"saved_msg">;
                     customResponseId: z.ZodString;
+                    ephemeral: z.ZodDefault<z.ZodBoolean>;
+                }, z.core.$strip>, z.ZodObject<{
+                    kind: z.ZodLiteral<"saved_message">;
+                    savedMessageId: z.ZodString;
                     ephemeral: z.ZodDefault<z.ZodBoolean>;
                 }, z.core.$strip>], "kind">;
             }, z.core.$strip>>;

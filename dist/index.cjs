@@ -567,10 +567,16 @@ var savedMsgActionSchema = import_zod7.z.object({
   customResponseId: import_zod7.z.string().min(1),
   ephemeral: import_zod7.z.boolean().default(true)
 });
+var savedMessageActionSchema = import_zod7.z.object({
+  kind: import_zod7.z.literal("saved_message"),
+  savedMessageId: import_zod7.z.string().min(1),
+  ephemeral: import_zod7.z.boolean().default(true)
+});
 var panelActionSchema = import_zod7.z.discriminatedUnion("kind", [
   replyTextActionSchema,
   roleActionSchema,
-  savedMsgActionSchema
+  savedMsgActionSchema,
+  savedMessageActionSchema
 ]);
 var BUTTON_STYLES = ["primary", "secondary", "success", "danger"];
 var panelButtonSchema = import_zod7.z.object({

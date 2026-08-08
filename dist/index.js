@@ -499,10 +499,16 @@ var savedMsgActionSchema = z7.object({
   customResponseId: z7.string().min(1),
   ephemeral: z7.boolean().default(true)
 });
+var savedMessageActionSchema = z7.object({
+  kind: z7.literal("saved_message"),
+  savedMessageId: z7.string().min(1),
+  ephemeral: z7.boolean().default(true)
+});
 var panelActionSchema = z7.discriminatedUnion("kind", [
   replyTextActionSchema,
   roleActionSchema,
-  savedMsgActionSchema
+  savedMsgActionSchema,
+  savedMessageActionSchema
 ]);
 var BUTTON_STYLES = ["primary", "secondary", "success", "danger"];
 var panelButtonSchema = z7.object({

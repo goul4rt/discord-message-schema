@@ -9,10 +9,16 @@ import { embedSchema } from '../src/schema/embed';
 const ROLE = '123456789012345678';
 
 describe('panelActionSchema', () => {
-  it('aceita reply_text, role e saved_msg', () => {
+  it('aceita reply_text, role, saved_msg e saved_message', () => {
     expect(panelActionSchema.safeParse({ kind: 'reply_text', text: 'oi', ephemeral: true }).success).toBe(true);
     expect(panelActionSchema.safeParse({ kind: 'role', roleId: ROLE, mode: 'toggle' }).success).toBe(true);
     expect(panelActionSchema.safeParse({ kind: 'saved_msg', customResponseId: 'abc', ephemeral: false }).success).toBe(true);
+    expect(panelActionSchema.safeParse({ kind: 'saved_message', savedMessageId: 'sm1', ephemeral: true }).success).toBe(true);
+  });
+  it('saved_message: ephemeral defaulta pra true e exige savedMessageId', () => {
+    const parsed = panelActionSchema.parse({ kind: 'saved_message', savedMessageId: 'sm1' });
+    expect(parsed).toEqual({ kind: 'saved_message', savedMessageId: 'sm1', ephemeral: true });
+    expect(panelActionSchema.safeParse({ kind: 'saved_message', savedMessageId: '' }).success).toBe(false);
   });
   it('rejeita kind desconhecido', () => {
     expect(panelActionSchema.safeParse({ kind: 'ban', userId: '1' }).success).toBe(false);

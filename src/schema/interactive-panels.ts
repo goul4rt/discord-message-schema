@@ -32,10 +32,18 @@ export const savedMsgActionSchema = z.object({
   ephemeral: z.boolean().default(true),
 });
 
+/** Responde com uma mensagem do criador de mensagens (tabela saved_messages). */
+export const savedMessageActionSchema = z.object({
+  kind: z.literal('saved_message'),
+  savedMessageId: z.string().min(1),
+  ephemeral: z.boolean().default(true),
+});
+
 export const panelActionSchema = z.discriminatedUnion('kind', [
   replyTextActionSchema,
   roleActionSchema,
   savedMsgActionSchema,
+  savedMessageActionSchema,
 ]);
 
 const BUTTON_STYLES = ['primary', 'secondary', 'success', 'danger'] as const;
