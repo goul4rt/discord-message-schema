@@ -546,7 +546,27 @@ var interactivePanelSchema = z7.object({
   messageId: snowflakeSchema.optional(),
   content: z7.string().max(2e3).optional(),
   embed: embedSchema.optional(),
+  /** Corpo em Components V2 (flag 1<<15 derivada pelo bot no deploy — a
+   *  flag NÃO é persistida). Exclusivo com `embed`/`content`: o Discord não
+   *  aceita content/embeds numa mensagem com a flag V2. */
+  componentsV2: z7.array(componentV2Schema).min(1).optional(),
   components: z7.array(panelComponentSchema).min(1).max(40)
+}).superRefine((panel, ctx) => {
+  if (!panel.componentsV2) return;
+  if (panel.embed) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["componentsV2"],
+      message: "embed e componentsV2 s\xE3o mutuamente exclusivos"
+    });
+  }
+  if (panel.content) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["content"],
+      message: "content n\xE3o \xE9 permitido com componentsV2 (flag V2 do Discord)"
+    });
+  }
 });
 var interactivePanelsConfigSchema = z7.object({
   enabled: z7.boolean().default(false),

@@ -1556,6 +1556,178 @@ declare const interactivePanelSchema: z.ZodObject<{
             inline: z.ZodOptional<z.ZodBoolean>;
         }, z.core.$strip>>>;
     }, z.core.$strip>>;
+    componentsV2: z.ZodOptional<z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+        type: z.ZodLiteral<17>;
+        components: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+            type: z.ZodLiteral<10>;
+            content: z.ZodString;
+        }, z.core.$strip>, z.ZodObject<{
+            type: z.ZodLiteral<9>;
+            components: z.ZodArray<z.ZodObject<{
+                type: z.ZodLiteral<10>;
+                content: z.ZodString;
+            }, z.core.$strip>>;
+            accessory: z.ZodUnion<readonly [z.ZodObject<{
+                type: z.ZodLiteral<11>;
+                media: z.ZodObject<{
+                    url: z.ZodString;
+                }, z.core.$strip>;
+                description: z.ZodOptional<z.ZodString>;
+                spoiler: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>, z.ZodObject<{
+                style: z.ZodLiteral<5>;
+                url: z.ZodString;
+                type: z.ZodLiteral<2>;
+                label: z.ZodOptional<z.ZodString>;
+                emoji: z.ZodOptional<z.ZodObject<{
+                    id: z.ZodOptional<z.ZodString>;
+                    name: z.ZodOptional<z.ZodString>;
+                    animated: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+                disabled: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>]>;
+        }, z.core.$strip>, z.ZodObject<{
+            type: z.ZodLiteral<14>;
+            divider: z.ZodOptional<z.ZodBoolean>;
+            spacing: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<1>, z.ZodLiteral<2>]>>;
+        }, z.core.$strip>, z.ZodObject<{
+            type: z.ZodLiteral<12>;
+            items: z.ZodArray<z.ZodObject<{
+                media: z.ZodObject<{
+                    url: z.ZodString;
+                }, z.core.$strip>;
+                description: z.ZodOptional<z.ZodString>;
+                spoiler: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>;
+        }, z.core.$strip>, z.ZodObject<{
+            type: z.ZodLiteral<1>;
+            components: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+                style: z.ZodLiteral<5>;
+                url: z.ZodString;
+                type: z.ZodLiteral<2>;
+                label: z.ZodOptional<z.ZodString>;
+                emoji: z.ZodOptional<z.ZodObject<{
+                    id: z.ZodOptional<z.ZodString>;
+                    name: z.ZodOptional<z.ZodString>;
+                    animated: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+                disabled: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>, z.ZodObject<{
+                style: z.ZodUnion<readonly [z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>, z.ZodLiteral<4>]>;
+                custom_id: z.ZodString;
+                type: z.ZodLiteral<2>;
+                label: z.ZodOptional<z.ZodString>;
+                emoji: z.ZodOptional<z.ZodObject<{
+                    id: z.ZodOptional<z.ZodString>;
+                    name: z.ZodOptional<z.ZodString>;
+                    animated: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+                disabled: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>, z.ZodObject<{
+                type: z.ZodLiteral<3>;
+                custom_id: z.ZodString;
+                placeholder: z.ZodOptional<z.ZodString>;
+                min_values: z.ZodOptional<z.ZodNumber>;
+                max_values: z.ZodOptional<z.ZodNumber>;
+                options: z.ZodArray<z.ZodObject<{
+                    label: z.ZodString;
+                    value: z.ZodString;
+                    description: z.ZodOptional<z.ZodString>;
+                    emoji: z.ZodOptional<z.ZodObject<{
+                        id: z.ZodOptional<z.ZodString>;
+                        name: z.ZodOptional<z.ZodString>;
+                        animated: z.ZodOptional<z.ZodBoolean>;
+                    }, z.core.$strip>>;
+                    default: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+            }, z.core.$strip>]>>;
+        }, z.core.$strip>]>>;
+        accent_color: z.ZodOptional<z.ZodNumber>;
+        spoiler: z.ZodOptional<z.ZodBoolean>;
+    }, z.core.$strip>, z.ZodObject<{
+        type: z.ZodLiteral<10>;
+        content: z.ZodString;
+    }, z.core.$strip>, z.ZodObject<{
+        type: z.ZodLiteral<9>;
+        components: z.ZodArray<z.ZodObject<{
+            type: z.ZodLiteral<10>;
+            content: z.ZodString;
+        }, z.core.$strip>>;
+        accessory: z.ZodUnion<readonly [z.ZodObject<{
+            type: z.ZodLiteral<11>;
+            media: z.ZodObject<{
+                url: z.ZodString;
+            }, z.core.$strip>;
+            description: z.ZodOptional<z.ZodString>;
+            spoiler: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>, z.ZodObject<{
+            style: z.ZodLiteral<5>;
+            url: z.ZodString;
+            type: z.ZodLiteral<2>;
+            label: z.ZodOptional<z.ZodString>;
+            emoji: z.ZodOptional<z.ZodObject<{
+                id: z.ZodOptional<z.ZodString>;
+                name: z.ZodOptional<z.ZodString>;
+                animated: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>;
+            disabled: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>]>;
+    }, z.core.$strip>, z.ZodObject<{
+        type: z.ZodLiteral<14>;
+        divider: z.ZodOptional<z.ZodBoolean>;
+        spacing: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<1>, z.ZodLiteral<2>]>>;
+    }, z.core.$strip>, z.ZodObject<{
+        type: z.ZodLiteral<12>;
+        items: z.ZodArray<z.ZodObject<{
+            media: z.ZodObject<{
+                url: z.ZodString;
+            }, z.core.$strip>;
+            description: z.ZodOptional<z.ZodString>;
+            spoiler: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>>;
+    }, z.core.$strip>, z.ZodObject<{
+        type: z.ZodLiteral<1>;
+        components: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+            style: z.ZodLiteral<5>;
+            url: z.ZodString;
+            type: z.ZodLiteral<2>;
+            label: z.ZodOptional<z.ZodString>;
+            emoji: z.ZodOptional<z.ZodObject<{
+                id: z.ZodOptional<z.ZodString>;
+                name: z.ZodOptional<z.ZodString>;
+                animated: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>;
+            disabled: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>, z.ZodObject<{
+            style: z.ZodUnion<readonly [z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>, z.ZodLiteral<4>]>;
+            custom_id: z.ZodString;
+            type: z.ZodLiteral<2>;
+            label: z.ZodOptional<z.ZodString>;
+            emoji: z.ZodOptional<z.ZodObject<{
+                id: z.ZodOptional<z.ZodString>;
+                name: z.ZodOptional<z.ZodString>;
+                animated: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>;
+            disabled: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>, z.ZodObject<{
+            type: z.ZodLiteral<3>;
+            custom_id: z.ZodString;
+            placeholder: z.ZodOptional<z.ZodString>;
+            min_values: z.ZodOptional<z.ZodNumber>;
+            max_values: z.ZodOptional<z.ZodNumber>;
+            options: z.ZodArray<z.ZodObject<{
+                label: z.ZodString;
+                value: z.ZodString;
+                description: z.ZodOptional<z.ZodString>;
+                emoji: z.ZodOptional<z.ZodObject<{
+                    id: z.ZodOptional<z.ZodString>;
+                    name: z.ZodOptional<z.ZodString>;
+                    animated: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+                default: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>;
+        }, z.core.$strip>]>>;
+    }, z.core.$strip>]>>>;
     components: z.ZodArray<z.ZodDiscriminatedUnion<[z.ZodObject<{
         id: z.ZodString;
         type: z.ZodLiteral<"button">;
@@ -1673,6 +1845,178 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
                 inline: z.ZodOptional<z.ZodBoolean>;
             }, z.core.$strip>>>;
         }, z.core.$strip>>;
+        componentsV2: z.ZodOptional<z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+            type: z.ZodLiteral<17>;
+            components: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+                type: z.ZodLiteral<10>;
+                content: z.ZodString;
+            }, z.core.$strip>, z.ZodObject<{
+                type: z.ZodLiteral<9>;
+                components: z.ZodArray<z.ZodObject<{
+                    type: z.ZodLiteral<10>;
+                    content: z.ZodString;
+                }, z.core.$strip>>;
+                accessory: z.ZodUnion<readonly [z.ZodObject<{
+                    type: z.ZodLiteral<11>;
+                    media: z.ZodObject<{
+                        url: z.ZodString;
+                    }, z.core.$strip>;
+                    description: z.ZodOptional<z.ZodString>;
+                    spoiler: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>, z.ZodObject<{
+                    style: z.ZodLiteral<5>;
+                    url: z.ZodString;
+                    type: z.ZodLiteral<2>;
+                    label: z.ZodOptional<z.ZodString>;
+                    emoji: z.ZodOptional<z.ZodObject<{
+                        id: z.ZodOptional<z.ZodString>;
+                        name: z.ZodOptional<z.ZodString>;
+                        animated: z.ZodOptional<z.ZodBoolean>;
+                    }, z.core.$strip>>;
+                    disabled: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>]>;
+            }, z.core.$strip>, z.ZodObject<{
+                type: z.ZodLiteral<14>;
+                divider: z.ZodOptional<z.ZodBoolean>;
+                spacing: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<1>, z.ZodLiteral<2>]>>;
+            }, z.core.$strip>, z.ZodObject<{
+                type: z.ZodLiteral<12>;
+                items: z.ZodArray<z.ZodObject<{
+                    media: z.ZodObject<{
+                        url: z.ZodString;
+                    }, z.core.$strip>;
+                    description: z.ZodOptional<z.ZodString>;
+                    spoiler: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+            }, z.core.$strip>, z.ZodObject<{
+                type: z.ZodLiteral<1>;
+                components: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+                    style: z.ZodLiteral<5>;
+                    url: z.ZodString;
+                    type: z.ZodLiteral<2>;
+                    label: z.ZodOptional<z.ZodString>;
+                    emoji: z.ZodOptional<z.ZodObject<{
+                        id: z.ZodOptional<z.ZodString>;
+                        name: z.ZodOptional<z.ZodString>;
+                        animated: z.ZodOptional<z.ZodBoolean>;
+                    }, z.core.$strip>>;
+                    disabled: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>, z.ZodObject<{
+                    style: z.ZodUnion<readonly [z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>, z.ZodLiteral<4>]>;
+                    custom_id: z.ZodString;
+                    type: z.ZodLiteral<2>;
+                    label: z.ZodOptional<z.ZodString>;
+                    emoji: z.ZodOptional<z.ZodObject<{
+                        id: z.ZodOptional<z.ZodString>;
+                        name: z.ZodOptional<z.ZodString>;
+                        animated: z.ZodOptional<z.ZodBoolean>;
+                    }, z.core.$strip>>;
+                    disabled: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>, z.ZodObject<{
+                    type: z.ZodLiteral<3>;
+                    custom_id: z.ZodString;
+                    placeholder: z.ZodOptional<z.ZodString>;
+                    min_values: z.ZodOptional<z.ZodNumber>;
+                    max_values: z.ZodOptional<z.ZodNumber>;
+                    options: z.ZodArray<z.ZodObject<{
+                        label: z.ZodString;
+                        value: z.ZodString;
+                        description: z.ZodOptional<z.ZodString>;
+                        emoji: z.ZodOptional<z.ZodObject<{
+                            id: z.ZodOptional<z.ZodString>;
+                            name: z.ZodOptional<z.ZodString>;
+                            animated: z.ZodOptional<z.ZodBoolean>;
+                        }, z.core.$strip>>;
+                        default: z.ZodOptional<z.ZodBoolean>;
+                    }, z.core.$strip>>;
+                }, z.core.$strip>]>>;
+            }, z.core.$strip>]>>;
+            accent_color: z.ZodOptional<z.ZodNumber>;
+            spoiler: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>, z.ZodObject<{
+            type: z.ZodLiteral<10>;
+            content: z.ZodString;
+        }, z.core.$strip>, z.ZodObject<{
+            type: z.ZodLiteral<9>;
+            components: z.ZodArray<z.ZodObject<{
+                type: z.ZodLiteral<10>;
+                content: z.ZodString;
+            }, z.core.$strip>>;
+            accessory: z.ZodUnion<readonly [z.ZodObject<{
+                type: z.ZodLiteral<11>;
+                media: z.ZodObject<{
+                    url: z.ZodString;
+                }, z.core.$strip>;
+                description: z.ZodOptional<z.ZodString>;
+                spoiler: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>, z.ZodObject<{
+                style: z.ZodLiteral<5>;
+                url: z.ZodString;
+                type: z.ZodLiteral<2>;
+                label: z.ZodOptional<z.ZodString>;
+                emoji: z.ZodOptional<z.ZodObject<{
+                    id: z.ZodOptional<z.ZodString>;
+                    name: z.ZodOptional<z.ZodString>;
+                    animated: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+                disabled: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>]>;
+        }, z.core.$strip>, z.ZodObject<{
+            type: z.ZodLiteral<14>;
+            divider: z.ZodOptional<z.ZodBoolean>;
+            spacing: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<1>, z.ZodLiteral<2>]>>;
+        }, z.core.$strip>, z.ZodObject<{
+            type: z.ZodLiteral<12>;
+            items: z.ZodArray<z.ZodObject<{
+                media: z.ZodObject<{
+                    url: z.ZodString;
+                }, z.core.$strip>;
+                description: z.ZodOptional<z.ZodString>;
+                spoiler: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>;
+        }, z.core.$strip>, z.ZodObject<{
+            type: z.ZodLiteral<1>;
+            components: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+                style: z.ZodLiteral<5>;
+                url: z.ZodString;
+                type: z.ZodLiteral<2>;
+                label: z.ZodOptional<z.ZodString>;
+                emoji: z.ZodOptional<z.ZodObject<{
+                    id: z.ZodOptional<z.ZodString>;
+                    name: z.ZodOptional<z.ZodString>;
+                    animated: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+                disabled: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>, z.ZodObject<{
+                style: z.ZodUnion<readonly [z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>, z.ZodLiteral<4>]>;
+                custom_id: z.ZodString;
+                type: z.ZodLiteral<2>;
+                label: z.ZodOptional<z.ZodString>;
+                emoji: z.ZodOptional<z.ZodObject<{
+                    id: z.ZodOptional<z.ZodString>;
+                    name: z.ZodOptional<z.ZodString>;
+                    animated: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+                disabled: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>, z.ZodObject<{
+                type: z.ZodLiteral<3>;
+                custom_id: z.ZodString;
+                placeholder: z.ZodOptional<z.ZodString>;
+                min_values: z.ZodOptional<z.ZodNumber>;
+                max_values: z.ZodOptional<z.ZodNumber>;
+                options: z.ZodArray<z.ZodObject<{
+                    label: z.ZodString;
+                    value: z.ZodString;
+                    description: z.ZodOptional<z.ZodString>;
+                    emoji: z.ZodOptional<z.ZodObject<{
+                        id: z.ZodOptional<z.ZodString>;
+                        name: z.ZodOptional<z.ZodString>;
+                        animated: z.ZodOptional<z.ZodBoolean>;
+                    }, z.core.$strip>>;
+                    default: z.ZodOptional<z.ZodBoolean>;
+                }, z.core.$strip>>;
+            }, z.core.$strip>]>>;
+        }, z.core.$strip>]>>>;
         components: z.ZodArray<z.ZodDiscriminatedUnion<[z.ZodObject<{
             id: z.ZodString;
             type: z.ZodLiteral<"button">;

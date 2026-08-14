@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { snowflakeSchema } from '../snowflake';
 import { emojiSchema } from './components';
 import { embedSchema } from './embed';
+import { componentV2Schema } from './components-v2';
 
 /** "Só estes cargos podem usar este componente." */
 export const panelGateSchema = z.object({
@@ -79,16 +80,38 @@ export const panelComponentSchema = z.discriminatedUnion('type', [
   panelSelectSchema,
 ]);
 
-export const interactivePanelSchema = z.object({
-  id: z.string().min(1),
-  name: z.string().min(1).max(100),
-  enabled: z.boolean().default(true),
-  channelId: snowflakeSchema,
-  messageId: snowflakeSchema.optional(),
-  content: z.string().max(2000).optional(),
-  embed: embedSchema.optional(),
-  components: z.array(panelComponentSchema).min(1).max(40),
-});
+export const interactivePanelSchema = z
+  .object({
+    id: z.string().min(1),
+    name: z.string().min(1).max(100),
+    enabled: z.boolean().default(true),
+    channelId: snowflakeSchema,
+    messageId: snowflakeSchema.optional(),
+    content: z.string().max(2000).optional(),
+    embed: embedSchema.optional(),
+    /** Corpo em Components V2 (flag 1<<15 derivada pelo bot no deploy — a
+     *  flag NÃO é persistida). Exclusivo com `embed`/`content`: o Discord não
+     *  aceita content/embeds numa mensagem com a flag V2. */
+    componentsV2: z.array(componentV2Schema).min(1).optional(),
+    components: z.array(panelComponentSchema).min(1).max(40),
+  })
+  .superRefine((panel, ctx) => {
+    if (!panel.componentsV2) return;
+    if (panel.embed) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['componentsV2'],
+        message: 'embed e componentsV2 são mutuamente exclusivos',
+      });
+    }
+    if (panel.content) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['content'],
+        message: 'content não é permitido com componentsV2 (flag V2 do Discord)',
+      });
+    }
+  });
 
 export const interactivePanelsConfigSchema = z.object({
   enabled: z.boolean().default(false),

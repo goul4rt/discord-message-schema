@@ -97,3 +97,46 @@ describe('interactivePanelSchema com embed', () => {
     }
   });
 });
+
+describe('interactivePanelSchema com componentsV2 (corpo V2)', () => {
+  const base = {
+    id: 'p1',
+    name: 'X',
+    enabled: true,
+    channelId: ROLE,
+    components: [{ id: 'b1', type: 'button', label: 'Ok', action: { kind: 'reply_text', text: 'oi' } }],
+  };
+  const v2Body = [{ type: 10, content: 'corpo em blocos' }];
+
+  it('aceita um painel com componentsV2 no corpo', () => {
+    const result = interactivePanelSchema.safeParse({ ...base, componentsV2: v2Body });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.componentsV2).toHaveLength(1);
+  });
+
+  it('embed e componentsV2 são mutuamente exclusivos', () => {
+    const result = interactivePanelSchema.safeParse({
+      ...base,
+      embed: { title: 'Olá' },
+      componentsV2: v2Body,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('componentsV2 não aceita content (Discord rejeita content com a flag V2)', () => {
+    const result = interactivePanelSchema.safeParse({
+      ...base,
+      content: 'texto',
+      componentsV2: v2Body,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('painel sem componentsV2 continua válido (backward-compat), inclusive com embed+content', () => {
+    expect(interactivePanelSchema.safeParse({ ...base, content: 'oi', embed: { title: 'T' } }).success).toBe(true);
+  });
+
+  it('componentsV2 vazio é rejeitado (usar undefined para modo clássico)', () => {
+    expect(interactivePanelSchema.safeParse({ ...base, componentsV2: [] }).success).toBe(false);
+  });
+});
