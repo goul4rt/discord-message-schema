@@ -7,7 +7,8 @@ import { z } from 'zod';
 import { snowflakeSchema } from '../snowflake';
 import { emojiSchema } from './components';
 import { embedSchema } from './embed';
-import { componentV2Schema } from './components-v2';
+import { componentV2Schema, componentsV2TotalChars } from './components-v2';
+import { LIMITS } from '../limits';
 
 /** "Só estes cargos podem usar este componente." */
 export const panelGateSchema = z.object({
@@ -92,7 +93,11 @@ export const interactivePanelSchema = z
     /** Corpo em Components V2 (flag 1<<15 derivada pelo bot no deploy — a
      *  flag NÃO é persistida). Exclusivo com `embed`/`content`: o Discord não
      *  aceita content/embeds numa mensagem com a flag V2. */
-    componentsV2: z.array(componentV2Schema).min(1).optional(),
+    componentsV2: z
+      .array(componentV2Schema)
+      .min(1)
+      .max(LIMITS.V2_COMPONENTS_MAX)
+      .optional(),
     components: z.array(panelComponentSchema).min(1).max(40),
   })
   .superRefine((panel, ctx) => {
@@ -109,6 +114,15 @@ export const interactivePanelSchema = z
         code: 'custom',
         path: ['content'],
         message: 'content não é permitido com componentsV2 (flag V2 do Discord)',
+      });
+    }
+    // Teto agregado de caracteres da mensagem V2 — cada nó tem limite próprio,
+    // mas a soma também estoura na API se passar do total.
+    if (componentsV2TotalChars(panel.componentsV2) > LIMITS.V2_TOTAL_CHARS_MAX) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['componentsV2'],
+        message: `componentsV2 passa do teto de ${LIMITS.V2_TOTAL_CHARS_MAX} caracteres da mensagem V2`,
       });
     }
   });

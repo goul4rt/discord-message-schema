@@ -140,3 +140,31 @@ describe('interactivePanelSchema com componentsV2 (corpo V2)', () => {
     expect(interactivePanelSchema.safeParse({ ...base, componentsV2: [] }).success).toBe(false);
   });
 });
+
+describe('limites do componentsV2 no painel (0.6.1)', () => {
+  const base = {
+    id: 'p1',
+    name: 'X',
+    enabled: true,
+    channelId: ROLE,
+    components: [{ id: 'b1', type: 'button', label: 'Ok', action: { kind: 'reply_text', text: 'oi' } }],
+  };
+
+  it('rejeita árvore com mais de 10 componentes de topo', () => {
+    const tree = Array.from({ length: 11 }, () => ({ type: 10, content: 'x' }));
+    expect(interactivePanelSchema.safeParse({ ...base, componentsV2: tree }).success).toBe(false);
+    expect(
+      interactivePanelSchema.safeParse({ ...base, componentsV2: tree.slice(0, 10) }).success
+    ).toBe(true);
+  });
+
+  it('rejeita árvore acima do teto AGREGADO de caracteres do V2', () => {
+    // Cada nó passa no limite individual (4000), mas a soma estoura o teto
+    // total da mensagem V2.
+    const big = [
+      { type: 10, content: 'a'.repeat(2500) },
+      { type: 10, content: 'b'.repeat(2500) },
+    ];
+    expect(interactivePanelSchema.safeParse({ ...base, componentsV2: big }).success).toBe(false);
+  });
+});
