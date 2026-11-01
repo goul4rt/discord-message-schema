@@ -579,11 +579,155 @@ var interactivePanelsConfigSchema = z7.object({
   enabled: z7.boolean().default(false),
   panels: z7.array(interactivePanelSchema).default([])
 });
+
+// src/schema/event-drops.ts
+import { z as z8 } from "zod";
+var MECHANICS = ["botao_sorteio", "escolha", "escolha_fixa", "digitar", "quiz"];
+var OUTCOMES = ["candy", "trick", "empty"];
+var RARITIES = ["comum", "incomum", "raro"];
+var snowflake = z8.string().regex(/^\d{17,20}$/);
+var dropOptionSchema = z8.object({
+  key: z8.string().min(1).max(50),
+  // vira sufixo de customId: só [a-z0-9-]
+  label: z8.string().min(1).max(80),
+  emoji: z8.string().optional(),
+  outcome: z8.enum(OUTCOMES).optional()
+  // escolha_fixa: obrigatório; escolha: ignorado
+});
+var dropSchema = z8.object({
+  key: z8.string().regex(/^[a-z0-9-]+$/).max(50),
+  mechanic: z8.enum(MECHANICS),
+  rarity: z8.enum(RARITIES).default("comum"),
+  embed: z8.object({
+    title: z8.string().max(256),
+    description: z8.string().max(2e3),
+    image: z8.string().url().optional(),
+    color: z8.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
+    footer: z8.string().max(200).optional()
+  }),
+  duration_seconds: z8.number().int().min(15).max(3600).default(120),
+  slots: z8.number().int().min(1).max(100).default(5),
+  // vencedores (candy) até fechar
+  trick_chance: z8.number().min(0).max(1).optional(),
+  // override do evento
+  empty_chance: z8.number().min(0).max(1).default(0),
+  points: z8.object({ first: z8.number().int(), repeat: z8.number().int() }).partial().optional(),
+  in_activity: z8.boolean().default(true),
+  // false = só horário fixo ou manual
+  max_per_day: z8.number().int().min(1).optional(),
+  // abóbora gigante 1/dia
+  button_label: z8.string().max(80).optional(),
+  // botao_sorteio
+  options: z8.array(dropOptionSchema).min(2).max(25).optional(),
+  // escolha | escolha_fixa | quiz
+  distribution: z8.object({
+    candy: z8.number().int().min(0),
+    trick: z8.number().int().min(0),
+    empty: z8.number().int().min(0)
+  }).optional(),
+  // escolha: sorteado no spawn; soma == options.length
+  answers: z8.array(z8.string().min(1)).min(1).optional(),
+  // digitar | quiz (texto aceito, case/acento-insensível)
+  messages: z8.object({
+    candy: z8.string().max(1e3).optional(),
+    trick: z8.string().max(1e3).optional(),
+    empty: z8.string().max(1e3).optional(),
+    late: z8.string().max(1e3).optional()
+  }).prefault({})
+}).superRefine((d, ctx) => {
+  if ((d.mechanic === "escolha" || d.mechanic === "escolha_fixa" || d.mechanic === "quiz") && !d.options)
+    ctx.addIssue({ code: "custom", path: ["options"], message: `${d.key}: options obrigat\xF3rio` });
+  if (d.mechanic === "escolha_fixa" && d.options?.some((o) => !o.outcome))
+    ctx.addIssue({
+      code: "custom",
+      path: ["options"],
+      message: `${d.key}: outcome por op\xE7\xE3o obrigat\xF3rio`
+    });
+  if (d.mechanic === "escolha" && (!d.distribution || d.distribution.candy + d.distribution.trick + d.distribution.empty !== d.options?.length))
+    ctx.addIssue({
+      code: "custom",
+      path: ["distribution"],
+      message: `${d.key}: distribution deve somar options.length`
+    });
+  if ((d.mechanic === "digitar" || d.mechanic === "quiz") && !d.answers)
+    ctx.addIssue({ code: "custom", path: ["answers"], message: `${d.key}: answers obrigat\xF3rio` });
+});
+var eventDropsConfigSchema = z8.object({
+  version: z8.literal(1),
+  timezone: z8.string().default("America/Cuiaba"),
+  role_id: snowflake,
+  /** Canal da staff para avisos (ex.: falha de hierarquia). Ausente = só log. */
+  staff_channel_id: snowflake.optional(),
+  event_role_duration: z8.enum(["forever", "event_end"]).default("forever"),
+  points: z8.object({ first: z8.number().int().default(10), repeat: z8.number().int().default(1) }).prefault({}),
+  trick_chance: z8.number().min(0).max(1).default(0.3),
+  trick: z8.object({ role_id: snowflake, duration_minutes: z8.number().int().min(1) }).optional(),
+  // Halloween não preenche
+  anti_abuse: z8.object({
+    min_member_age_days: z8.number().min(0).default(3),
+    excluded_role_ids: z8.array(snowflake).default([]),
+    max_candies_per_user_per_day: z8.number().int().min(1).nullable().default(null)
+  }).prefault({}),
+  activity: z8.object({
+    enabled: z8.boolean().default(true),
+    channel_ids: z8.array(snowflake).min(1),
+    window_seconds: z8.number().int().default(300),
+    threshold: z8.number().int().default(15),
+    chance: z8.number().min(0).max(1).default(0.08),
+    channel_cooldown_minutes: z8.number().int().default(20),
+    global_cooldown_minutes: z8.number().int().default(0),
+    min_message_length: z8.number().int().default(3),
+    per_user_seconds: z8.number().int().default(20),
+    rarity_weights: z8.object({
+      comum: z8.number().default(60),
+      incomum: z8.number().default(30),
+      raro: z8.number().default(10)
+    }).prefault({})
+  }).optional(),
+  schedule: z8.array(
+    z8.object({
+      at: z8.string().datetime({ offset: true }),
+      drop_key: z8.string(),
+      channel_id: snowflake
+    })
+  ).default([]),
+  drops: z8.array(dropSchema).min(1),
+  thread: z8.object({
+    forum_ids: z8.array(snowflake).min(1),
+    allowed_tag_ids: z8.array(snowflake).optional(),
+    allow_preexisting: z8.boolean().default(false),
+    min_replies: z8.number().int().default(5),
+    min_distinct_users: z8.number().int().default(3),
+    min_chars: z8.number().int().default(3),
+    reaction_emoji: z8.string().default("\u{1F383}"),
+    max_rewards_per_user: z8.number().int().min(1).default(1),
+    reply_message: z8.string().max(1e3).optional(),
+    points: z8.object({ first: z8.number().int(), repeat: z8.number().int() }).partial().optional()
+  }).optional()
+}).superRefine((c, ctx) => {
+  const keys = new Set(c.drops.map((d) => d.key));
+  if (keys.size !== c.drops.length) {
+    const seen = /* @__PURE__ */ new Set();
+    const i = c.drops.findIndex((d) => seen.size === seen.add(d.key).size);
+    ctx.addIssue({ code: "custom", path: ["drops", i, "key"], message: "drop.key duplicado" });
+  }
+  c.schedule.forEach((s, i) => {
+    if (!keys.has(s.drop_key))
+      ctx.addIssue({
+        code: "custom",
+        path: ["schedule", i, "drop_key"],
+        message: `schedule: drop_key ${s.drop_key} inexistente`
+      });
+  });
+});
 export {
   ERROR_CODES,
   LIMITS,
+  MECHANICS,
+  OUTCOMES,
   PLACEHOLDERS,
   PLACEHOLDER_PATTERN,
+  RARITIES,
   actionButtonSchema,
   actionRowSchema,
   allowedMentionsSchema,
@@ -593,10 +737,13 @@ export {
   containerSchema,
   containerSubComponentSchema,
   containsPlaceholder,
+  dropOptionSchema,
+  dropSchema,
   embedFieldSchema,
   embedSchema,
   embedTotalChars,
   emojiSchema,
+  eventDropsConfigSchema,
   interactivePanelSchema,
   interactivePanelsConfigSchema,
   isComponentV2,

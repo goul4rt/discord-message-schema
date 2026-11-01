@@ -81,3 +81,17 @@ export {
   type InteractivePanel,
   type InteractivePanelsConfig,
 } from './schema/interactive-panels';
+export {
+  MECHANICS,
+  OUTCOMES,
+  RARITIES,
+  dropOptionSchema,
+  dropSchema,
+  eventDropsConfigSchema,
+  type EventDropsConfig,
+  type DropConfig,
+  type DropOption,
+  type Outcome,
+  type Mechanic,
+  type Rarity,
+} from './schema/event-drops';
