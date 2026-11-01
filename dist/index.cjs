@@ -22,8 +22,11 @@ var index_exports = {};
 __export(index_exports, {
   ERROR_CODES: () => ERROR_CODES,
   LIMITS: () => LIMITS,
+  MECHANICS: () => MECHANICS,
+  OUTCOMES: () => OUTCOMES,
   PLACEHOLDERS: () => PLACEHOLDERS,
   PLACEHOLDER_PATTERN: () => PLACEHOLDER_PATTERN,
+  RARITIES: () => RARITIES,
   actionButtonSchema: () => actionButtonSchema,
   actionRowSchema: () => actionRowSchema,
   allowedMentionsSchema: () => allowedMentionsSchema,
@@ -33,10 +36,13 @@ __export(index_exports, {
   containerSchema: () => containerSchema,
   containerSubComponentSchema: () => containerSubComponentSchema,
   containsPlaceholder: () => containsPlaceholder,
+  dropOptionSchema: () => dropOptionSchema,
+  dropSchema: () => dropSchema,
   embedFieldSchema: () => embedFieldSchema,
   embedSchema: () => embedSchema,
   embedTotalChars: () => embedTotalChars,
   emojiSchema: () => emojiSchema,
+  eventDropsConfigSchema: () => eventDropsConfigSchema,
   interactivePanelSchema: () => interactivePanelSchema,
   interactivePanelsConfigSchema: () => interactivePanelsConfigSchema,
   isComponentV2: () => isComponentV2,
@@ -647,12 +653,156 @@ var interactivePanelsConfigSchema = import_zod7.z.object({
   enabled: import_zod7.z.boolean().default(false),
   panels: import_zod7.z.array(interactivePanelSchema).default([])
 });
+
+// src/schema/event-drops.ts
+var import_zod8 = require("zod");
+var MECHANICS = ["botao_sorteio", "escolha", "escolha_fixa", "digitar", "quiz"];
+var OUTCOMES = ["candy", "trick", "empty"];
+var RARITIES = ["comum", "incomum", "raro"];
+var snowflake = import_zod8.z.string().regex(/^\d{17,20}$/);
+var dropOptionSchema = import_zod8.z.object({
+  key: import_zod8.z.string().min(1).max(50),
+  // vira sufixo de customId: só [a-z0-9-]
+  label: import_zod8.z.string().min(1).max(80),
+  emoji: import_zod8.z.string().optional(),
+  outcome: import_zod8.z.enum(OUTCOMES).optional()
+  // escolha_fixa: obrigatório; escolha: ignorado
+});
+var dropSchema = import_zod8.z.object({
+  key: import_zod8.z.string().regex(/^[a-z0-9-]+$/).max(50),
+  mechanic: import_zod8.z.enum(MECHANICS),
+  rarity: import_zod8.z.enum(RARITIES).default("comum"),
+  embed: import_zod8.z.object({
+    title: import_zod8.z.string().max(256),
+    description: import_zod8.z.string().max(2e3),
+    image: import_zod8.z.string().url().optional(),
+    color: import_zod8.z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
+    footer: import_zod8.z.string().max(200).optional()
+  }),
+  duration_seconds: import_zod8.z.number().int().min(15).max(3600).default(120),
+  slots: import_zod8.z.number().int().min(1).max(100).default(5),
+  // vencedores (candy) até fechar
+  trick_chance: import_zod8.z.number().min(0).max(1).optional(),
+  // override do evento
+  empty_chance: import_zod8.z.number().min(0).max(1).default(0),
+  points: import_zod8.z.object({ first: import_zod8.z.number().int(), repeat: import_zod8.z.number().int() }).partial().optional(),
+  in_activity: import_zod8.z.boolean().default(true),
+  // false = só horário fixo ou manual
+  max_per_day: import_zod8.z.number().int().min(1).optional(),
+  // abóbora gigante 1/dia
+  button_label: import_zod8.z.string().max(80).optional(),
+  // botao_sorteio
+  options: import_zod8.z.array(dropOptionSchema).min(2).max(25).optional(),
+  // escolha | escolha_fixa | quiz
+  distribution: import_zod8.z.object({
+    candy: import_zod8.z.number().int().min(0),
+    trick: import_zod8.z.number().int().min(0),
+    empty: import_zod8.z.number().int().min(0)
+  }).optional(),
+  // escolha: sorteado no spawn; soma == options.length
+  answers: import_zod8.z.array(import_zod8.z.string().min(1)).min(1).optional(),
+  // digitar | quiz (texto aceito, case/acento-insensível)
+  messages: import_zod8.z.object({
+    candy: import_zod8.z.string().max(1e3).optional(),
+    trick: import_zod8.z.string().max(1e3).optional(),
+    empty: import_zod8.z.string().max(1e3).optional(),
+    late: import_zod8.z.string().max(1e3).optional()
+  }).prefault({})
+}).superRefine((d, ctx) => {
+  if ((d.mechanic === "escolha" || d.mechanic === "escolha_fixa" || d.mechanic === "quiz") && !d.options)
+    ctx.addIssue({ code: "custom", path: ["options"], message: `${d.key}: options obrigat\xF3rio` });
+  if (d.mechanic === "escolha_fixa" && d.options?.some((o) => !o.outcome))
+    ctx.addIssue({
+      code: "custom",
+      path: ["options"],
+      message: `${d.key}: outcome por op\xE7\xE3o obrigat\xF3rio`
+    });
+  if (d.mechanic === "escolha" && (!d.distribution || d.distribution.candy + d.distribution.trick + d.distribution.empty !== d.options?.length))
+    ctx.addIssue({
+      code: "custom",
+      path: ["distribution"],
+      message: `${d.key}: distribution deve somar options.length`
+    });
+  if ((d.mechanic === "digitar" || d.mechanic === "quiz") && !d.answers)
+    ctx.addIssue({ code: "custom", path: ["answers"], message: `${d.key}: answers obrigat\xF3rio` });
+});
+var eventDropsConfigSchema = import_zod8.z.object({
+  version: import_zod8.z.literal(1),
+  timezone: import_zod8.z.string().default("America/Cuiaba"),
+  role_id: snowflake,
+  /** Canal da staff para avisos (ex.: falha de hierarquia). Ausente = só log. */
+  staff_channel_id: snowflake.optional(),
+  event_role_duration: import_zod8.z.enum(["forever", "event_end"]).default("forever"),
+  points: import_zod8.z.object({ first: import_zod8.z.number().int().default(10), repeat: import_zod8.z.number().int().default(1) }).prefault({}),
+  trick_chance: import_zod8.z.number().min(0).max(1).default(0.3),
+  trick: import_zod8.z.object({ role_id: snowflake, duration_minutes: import_zod8.z.number().int().min(1) }).optional(),
+  // Halloween não preenche
+  anti_abuse: import_zod8.z.object({
+    min_member_age_days: import_zod8.z.number().min(0).default(3),
+    excluded_role_ids: import_zod8.z.array(snowflake).default([]),
+    max_candies_per_user_per_day: import_zod8.z.number().int().min(1).nullable().default(null)
+  }).prefault({}),
+  activity: import_zod8.z.object({
+    enabled: import_zod8.z.boolean().default(true),
+    channel_ids: import_zod8.z.array(snowflake).min(1),
+    window_seconds: import_zod8.z.number().int().default(300),
+    threshold: import_zod8.z.number().int().default(15),
+    chance: import_zod8.z.number().min(0).max(1).default(0.08),
+    channel_cooldown_minutes: import_zod8.z.number().int().default(20),
+    global_cooldown_minutes: import_zod8.z.number().int().default(0),
+    min_message_length: import_zod8.z.number().int().default(3),
+    per_user_seconds: import_zod8.z.number().int().default(20),
+    rarity_weights: import_zod8.z.object({
+      comum: import_zod8.z.number().default(60),
+      incomum: import_zod8.z.number().default(30),
+      raro: import_zod8.z.number().default(10)
+    }).prefault({})
+  }).optional(),
+  schedule: import_zod8.z.array(
+    import_zod8.z.object({
+      at: import_zod8.z.string().datetime({ offset: true }),
+      drop_key: import_zod8.z.string(),
+      channel_id: snowflake
+    })
+  ).default([]),
+  drops: import_zod8.z.array(dropSchema).min(1),
+  thread: import_zod8.z.object({
+    forum_ids: import_zod8.z.array(snowflake).min(1),
+    allowed_tag_ids: import_zod8.z.array(snowflake).optional(),
+    allow_preexisting: import_zod8.z.boolean().default(false),
+    min_replies: import_zod8.z.number().int().default(5),
+    min_distinct_users: import_zod8.z.number().int().default(3),
+    min_chars: import_zod8.z.number().int().default(3),
+    reaction_emoji: import_zod8.z.string().default("\u{1F383}"),
+    max_rewards_per_user: import_zod8.z.number().int().min(1).default(1),
+    reply_message: import_zod8.z.string().max(1e3).optional(),
+    points: import_zod8.z.object({ first: import_zod8.z.number().int(), repeat: import_zod8.z.number().int() }).partial().optional()
+  }).optional()
+}).superRefine((c, ctx) => {
+  const keys = new Set(c.drops.map((d) => d.key));
+  if (keys.size !== c.drops.length) {
+    const seen = /* @__PURE__ */ new Set();
+    const i = c.drops.findIndex((d) => seen.size === seen.add(d.key).size);
+    ctx.addIssue({ code: "custom", path: ["drops", i, "key"], message: "drop.key duplicado" });
+  }
+  c.schedule.forEach((s, i) => {
+    if (!keys.has(s.drop_key))
+      ctx.addIssue({
+        code: "custom",
+        path: ["schedule", i, "drop_key"],
+        message: `schedule: drop_key ${s.drop_key} inexistente`
+      });
+  });
+});
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ERROR_CODES,
   LIMITS,
+  MECHANICS,
+  OUTCOMES,
   PLACEHOLDERS,
   PLACEHOLDER_PATTERN,
+  RARITIES,
   actionButtonSchema,
   actionRowSchema,
   allowedMentionsSchema,
@@ -662,10 +812,13 @@ var interactivePanelsConfigSchema = import_zod7.z.object({
   containerSchema,
   containerSubComponentSchema,
   containsPlaceholder,
+  dropOptionSchema,
+  dropSchema,
   embedFieldSchema,
   embedSchema,
   embedTotalChars,
   emojiSchema,
+  eventDropsConfigSchema,
   interactivePanelSchema,
   interactivePanelsConfigSchema,
   isComponentV2,

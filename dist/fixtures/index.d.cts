@@ -1,3 +1,6 @@
+import { E as EventDropsConfig } from '../event-drops-mF98E2bI.cjs';
+import 'zod';
+
 /**
  * Contract fixtures: both consumer repos run these through the schemas in
  * their own test suites to detect version drift.
@@ -260,4 +263,322 @@ declare const INVALID_SEND_REQUESTS: readonly [{
     };
 }];
 
-export { INVALID_MESSAGES, INVALID_SEND_REQUESTS, VALID_MESSAGES, VALID_SEND_REQUESTS };
+/** Cópia exata de discord-bot src/scripts/data/halloween-2026.json (entrada crua, sem defaults). */
+declare const EVENT_DROPS_HALLOWEEN_2026: {
+    version: number;
+    timezone: string;
+    role_id: string;
+    staff_channel_id: string;
+    event_role_duration: string;
+    points: {
+        first: number;
+        repeat: number;
+    };
+    trick_chance: number;
+    anti_abuse: {
+        min_member_age_days: number;
+        excluded_role_ids: never[];
+        max_candies_per_user_per_day: null;
+    };
+    activity: {
+        enabled: boolean;
+        channel_ids: string[];
+        window_seconds: number;
+        threshold: number;
+        chance: number;
+        channel_cooldown_minutes: number;
+        global_cooldown_minutes: number;
+        min_message_length: number;
+        per_user_seconds: number;
+        rarity_weights: {
+            comum: number;
+            incomum: number;
+            raro: number;
+        };
+    };
+    schedule: {
+        at: string;
+        drop_key: string;
+        channel_id: string;
+    }[];
+    thread: {
+        forum_ids: string[];
+        allow_preexisting: boolean;
+        min_replies: number;
+        min_distinct_users: number;
+        min_chars: number;
+        reaction_emoji: string;
+        max_rewards_per_user: number;
+        reply_message: string;
+    };
+    drops: ({
+        key: string;
+        mechanic: string;
+        rarity: string;
+        embed: {
+            title: string;
+            description: string;
+            color: string;
+        };
+        duration_seconds: number;
+        slots: number;
+        button_label: string;
+        messages: {
+            trick: string;
+            late: string;
+            empty?: undefined;
+            candy?: undefined;
+        };
+        options?: undefined;
+        distribution?: undefined;
+        trick_chance?: undefined;
+        answers?: undefined;
+        points?: undefined;
+        max_per_day?: undefined;
+        in_activity?: undefined;
+    } | {
+        key: string;
+        mechanic: string;
+        rarity: string;
+        embed: {
+            title: string;
+            description: string;
+            color: string;
+        };
+        duration_seconds: number;
+        slots: number;
+        options: {
+            key: string;
+            label: string;
+            emoji: string;
+            outcome: string;
+        }[];
+        messages: {
+            trick: string;
+            empty: string;
+            late?: undefined;
+            candy?: undefined;
+        };
+        button_label?: undefined;
+        distribution?: undefined;
+        trick_chance?: undefined;
+        answers?: undefined;
+        points?: undefined;
+        max_per_day?: undefined;
+        in_activity?: undefined;
+    } | {
+        key: string;
+        mechanic: string;
+        rarity: string;
+        embed: {
+            title: string;
+            description: string;
+            color: string;
+        };
+        duration_seconds: number;
+        slots: number;
+        options: {
+            key: string;
+            label: string;
+            emoji: string;
+        }[];
+        distribution: {
+            candy: number;
+            trick: number;
+            empty: number;
+        };
+        messages: {
+            trick: string;
+            empty: string;
+            late?: undefined;
+            candy?: undefined;
+        };
+        button_label?: undefined;
+        trick_chance?: undefined;
+        answers?: undefined;
+        points?: undefined;
+        max_per_day?: undefined;
+        in_activity?: undefined;
+    } | {
+        key: string;
+        mechanic: string;
+        rarity: string;
+        trick_chance: number;
+        embed: {
+            title: string;
+            description: string;
+            color: string;
+        };
+        duration_seconds: number;
+        slots: number;
+        button_label: string;
+        messages: {
+            trick: string;
+            candy: string;
+            late?: undefined;
+            empty?: undefined;
+        };
+        options?: undefined;
+        distribution?: undefined;
+        answers?: undefined;
+        points?: undefined;
+        max_per_day?: undefined;
+        in_activity?: undefined;
+    } | {
+        key: string;
+        mechanic: string;
+        rarity: string;
+        embed: {
+            title: string;
+            description: string;
+            color: string;
+        };
+        duration_seconds: number;
+        slots: number;
+        answers: string[];
+        button_label?: undefined;
+        messages?: undefined;
+        options?: undefined;
+        distribution?: undefined;
+        trick_chance?: undefined;
+        points?: undefined;
+        max_per_day?: undefined;
+        in_activity?: undefined;
+    } | {
+        key: string;
+        mechanic: string;
+        rarity: string;
+        embed: {
+            title: string;
+            description: string;
+            color: string;
+        };
+        duration_seconds: number;
+        slots: number;
+        options: {
+            key: string;
+            label: string;
+        }[];
+        answers: string[];
+        button_label?: undefined;
+        messages?: undefined;
+        distribution?: undefined;
+        trick_chance?: undefined;
+        points?: undefined;
+        max_per_day?: undefined;
+        in_activity?: undefined;
+    } | {
+        key: string;
+        mechanic: string;
+        rarity: string;
+        trick_chance: number;
+        embed: {
+            title: string;
+            description: string;
+            color: string;
+        };
+        duration_seconds: number;
+        slots: number;
+        options: {
+            key: string;
+            label: string;
+            emoji: string;
+            outcome: string;
+        }[];
+        points: {
+            first: number;
+            repeat: number;
+        };
+        messages: {
+            empty: string;
+            trick?: undefined;
+            late?: undefined;
+            candy?: undefined;
+        };
+        button_label?: undefined;
+        distribution?: undefined;
+        answers?: undefined;
+        max_per_day?: undefined;
+        in_activity?: undefined;
+    } | {
+        key: string;
+        mechanic: string;
+        rarity: string;
+        trick_chance: number;
+        embed: {
+            title: string;
+            description: string;
+            color: string;
+        };
+        duration_seconds: number;
+        slots: number;
+        button_label: string;
+        points: {
+            first: number;
+            repeat: number;
+        };
+        messages?: undefined;
+        options?: undefined;
+        distribution?: undefined;
+        answers?: undefined;
+        max_per_day?: undefined;
+        in_activity?: undefined;
+    } | {
+        key: string;
+        mechanic: string;
+        rarity: string;
+        max_per_day: number;
+        trick_chance: number;
+        embed: {
+            title: string;
+            description: string;
+            color: string;
+        };
+        duration_seconds: number;
+        slots: number;
+        button_label: string;
+        points: {
+            first: number;
+            repeat: number;
+        };
+        messages?: undefined;
+        options?: undefined;
+        distribution?: undefined;
+        answers?: undefined;
+        in_activity?: undefined;
+    } | {
+        key: string;
+        mechanic: string;
+        rarity: string;
+        trick_chance: number;
+        embed: {
+            title: string;
+            description: string;
+            color: string;
+        };
+        duration_seconds: number;
+        slots: number;
+        button_label: string;
+        points: {
+            first: number;
+            repeat: number;
+        };
+        in_activity: boolean;
+        messages?: undefined;
+        options?: undefined;
+        distribution?: undefined;
+        answers?: undefined;
+        max_per_day?: undefined;
+    })[];
+};
+/** Saída esperada de eventDropsConfigSchema.parse(EVENT_DROPS_HALLOWEEN_2026) (com defaults). */
+declare const EVENT_DROPS_HALLOWEEN_2026_PARSED: EventDropsConfig;
+type Cfg = Record<string, any>;
+/** Configs inválidas derivadas do Halloween; `expectPath` é o path do issue esperado. */
+declare const EVENT_DROPS_INVALID: {
+    name: string;
+    config: Cfg;
+    expectPath: (string | number)[];
+}[];
+
+export { EVENT_DROPS_HALLOWEEN_2026, EVENT_DROPS_HALLOWEEN_2026_PARSED, EVENT_DROPS_INVALID, INVALID_MESSAGES, INVALID_SEND_REQUESTS, VALID_MESSAGES, VALID_SEND_REQUESTS };

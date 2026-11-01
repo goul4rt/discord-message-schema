@@ -1,2 +1,7 @@
 export { VALID_MESSAGES, VALID_SEND_REQUESTS } from './valid';
 export { INVALID_MESSAGES, INVALID_SEND_REQUESTS } from './invalid';
+export {
+  EVENT_DROPS_HALLOWEEN_2026,
+  EVENT_DROPS_HALLOWEEN_2026_PARSED,
+  EVENT_DROPS_INVALID,
+} from './event-drops';

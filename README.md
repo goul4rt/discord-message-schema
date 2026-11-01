@@ -73,6 +73,20 @@ precisa comparar a flag da mensagem existente com a do payload antes de editar.
 `@delfus/discord-message-schema/fixtures` para os repos consumidores rodarem
 nos próprios testes e detectarem drift de versão.
 
+## Eventos de drops (v0.7.0)
+
+`eventDropsConfigSchema` (zod 4) é a fonte única da config de eventos de drops
+(`GuildEvent.config`), compartilhada por bot e painel. Exporta também
+`MECHANICS`, `OUTCOMES`, `RARITIES`, `dropSchema`, `dropOptionSchema` e os tipos
+`EventDropsConfig`, `DropConfig`, `DropOption`, `Outcome`, `Mechanic`, `Rarity`.
+
+Os `superRefine` emitem issues com `path` (`['drops', i, 'options' | 'distribution' | 'answers']`,
+`['drops', i, 'key']` para duplicado, `['schedule', i, 'drop_key']`), para mapear a campo de formulário.
+
+Fixtures (subpath `/fixtures`): `EVENT_DROPS_HALLOWEEN_2026` (config crua),
+`EVENT_DROPS_HALLOWEEN_2026_PARSED` (saída do parse, com defaults) e
+`EVENT_DROPS_INVALID` (`{ name, config, expectPath }`).
+
 ## Versionamento
 
 Tags semver (`v0.1.0`, ...). Consumidores fixam a tag no install. Mudança de
