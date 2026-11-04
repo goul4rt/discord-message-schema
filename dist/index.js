@@ -480,9 +480,16 @@ var sendMessageResponseSchema = z6.discriminatedUnion("ok", [
 
 // src/schema/interactive-panels.ts
 import { z as z7 } from "zod";
+var tagLossDmSchema = z7.discriminatedUnion("kind", [
+  z7.object({ kind: z7.literal("text"), text: z7.string().min(1).max(2e3) }),
+  z7.object({ kind: z7.literal("saved_message"), savedMessageId: z7.string().min(1) })
+]);
 var panelGateSchema = z7.object({
   allowedRoleIds: z7.array(snowflakeSchema).default([]),
   requireServerTag: z7.boolean().optional(),
+  /** DM opcional quando a pessoa tira a tag e perde o cargo da recompensa.
+   *  Frequência travada pelo bot (não configurável por servidor). */
+  tagLossDm: tagLossDmSchema.optional(),
   denyMessage: z7.string().max(2e3).optional()
 }).refine((g) => g.allowedRoleIds.length > 0 || g.requireServerTag === true, {
   message: "gate precisa de cargos permitidos ou da tag do servidor",
@@ -770,6 +777,7 @@ export {
   sendMessageResponseSchema,
   separatorSchema,
   snowflakeSchema,
+  tagLossDmSchema,
   textDisplaySchema,
   thumbnailSchema,
   urlSchema,
