@@ -10,11 +10,21 @@ import { embedSchema } from './embed';
 import { componentV2Schema, componentsV2TotalChars } from './components-v2';
 import { LIMITS } from '../limits';
 
-/** "Só estes cargos podem usar este componente." */
-export const panelGateSchema = z.object({
-  allowedRoleIds: z.array(snowflakeSchema).min(1),
-  denyMessage: z.string().max(2000).optional(),
-});
+/**
+ * Quem pode usar o componente. Condições somam (E): cargos permitidos e/ou
+ * exigir a tag do servidor ativa no perfil (primary guild do Discord).
+ * Precisa de pelo menos uma condição.
+ */
+export const panelGateSchema = z
+  .object({
+    allowedRoleIds: z.array(snowflakeSchema).default([]),
+    requireServerTag: z.boolean().optional(),
+    denyMessage: z.string().max(2000).optional(),
+  })
+  .refine((g) => g.allowedRoleIds.length > 0 || g.requireServerTag === true, {
+    message: 'gate precisa de cargos permitidos ou da tag do servidor',
+    path: ['allowedRoleIds'],
+  });
 
 export const replyTextActionSchema = z.object({
   kind: z.literal('reply_text'),

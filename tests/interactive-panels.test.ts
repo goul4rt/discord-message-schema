@@ -3,6 +3,7 @@ import {
   interactivePanelsConfigSchema,
   panelActionSchema,
   interactivePanelSchema,
+  panelGateSchema,
 } from '../src/schema/interactive-panels';
 import { embedSchema } from '../src/schema/embed';
 
@@ -49,6 +50,11 @@ describe('interactivePanelsConfigSchema', () => {
       ],
     });
     expect(ok.success).toBe(true);
+  });
+  it('gate aceita só a tag do servidor e rejeita gate vazio', () => {
+    expect(panelGateSchema.safeParse({ requireServerTag: true }).success).toBe(true);
+    expect(panelGateSchema.safeParse({ allowedRoleIds: [] }).success).toBe(false);
+    expect(panelGateSchema.safeParse({ requireServerTag: false }).success).toBe(false);
   });
   it('rejeita botão sem ação', () => {
     const bad = interactivePanelsConfigSchema.safeParse({

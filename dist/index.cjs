@@ -555,8 +555,12 @@ var sendMessageResponseSchema = import_zod6.z.discriminatedUnion("ok", [
 // src/schema/interactive-panels.ts
 var import_zod7 = require("zod");
 var panelGateSchema = import_zod7.z.object({
-  allowedRoleIds: import_zod7.z.array(snowflakeSchema).min(1),
+  allowedRoleIds: import_zod7.z.array(snowflakeSchema).default([]),
+  requireServerTag: import_zod7.z.boolean().optional(),
   denyMessage: import_zod7.z.string().max(2e3).optional()
+}).refine((g) => g.allowedRoleIds.length > 0 || g.requireServerTag === true, {
+  message: "gate precisa de cargos permitidos ou da tag do servidor",
+  path: ["allowedRoleIds"]
 });
 var replyTextActionSchema = import_zod7.z.object({
   kind: import_zod7.z.literal("reply_text"),
