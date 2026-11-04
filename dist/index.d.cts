@@ -1301,9 +1301,14 @@ type SendMessageResponse = z.infer<typeof sendMessageResponseSchema>;
  * ação + um gate de permissão opcional (sem action-sets — ver spec SP2).
  */
 
-/** "Só estes cargos podem usar este componente." */
+/**
+ * Quem pode usar o componente. Condições somam (E): cargos permitidos e/ou
+ * exigir a tag do servidor ativa no perfil (primary guild do Discord).
+ * Precisa de pelo menos uma condição.
+ */
 declare const panelGateSchema: z.ZodObject<{
-    allowedRoleIds: z.ZodArray<z.ZodString>;
+    allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
+    requireServerTag: z.ZodOptional<z.ZodBoolean>;
     denyMessage: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 declare const panelActionSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1343,7 +1348,8 @@ declare const panelButtonSchema: z.ZodObject<{
         danger: "danger";
     }>>;
     gate: z.ZodOptional<z.ZodObject<{
-        allowedRoleIds: z.ZodArray<z.ZodString>;
+        allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
+        requireServerTag: z.ZodOptional<z.ZodBoolean>;
         denyMessage: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>>;
     action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1378,7 +1384,8 @@ declare const panelSelectOptionSchema: z.ZodObject<{
         animated: z.ZodOptional<z.ZodBoolean>;
     }, z.core.$strip>>;
     gate: z.ZodOptional<z.ZodObject<{
-        allowedRoleIds: z.ZodArray<z.ZodString>;
+        allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
+        requireServerTag: z.ZodOptional<z.ZodBoolean>;
         denyMessage: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>>;
     action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1417,7 +1424,8 @@ declare const panelSelectSchema: z.ZodObject<{
             animated: z.ZodOptional<z.ZodBoolean>;
         }, z.core.$strip>>;
         gate: z.ZodOptional<z.ZodObject<{
-            allowedRoleIds: z.ZodArray<z.ZodString>;
+            allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
+            requireServerTag: z.ZodOptional<z.ZodBoolean>;
             denyMessage: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>>;
         action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1459,7 +1467,8 @@ declare const panelComponentSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
         danger: "danger";
     }>>;
     gate: z.ZodOptional<z.ZodObject<{
-        allowedRoleIds: z.ZodArray<z.ZodString>;
+        allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
+        requireServerTag: z.ZodOptional<z.ZodBoolean>;
         denyMessage: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>>;
     action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1497,7 +1506,8 @@ declare const panelComponentSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
             animated: z.ZodOptional<z.ZodBoolean>;
         }, z.core.$strip>>;
         gate: z.ZodOptional<z.ZodObject<{
-            allowedRoleIds: z.ZodArray<z.ZodString>;
+            allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
+            requireServerTag: z.ZodOptional<z.ZodBoolean>;
             denyMessage: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>>;
         action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1745,7 +1755,8 @@ declare const interactivePanelSchema: z.ZodObject<{
             danger: "danger";
         }>>;
         gate: z.ZodOptional<z.ZodObject<{
-            allowedRoleIds: z.ZodArray<z.ZodString>;
+            allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
+            requireServerTag: z.ZodOptional<z.ZodBoolean>;
             denyMessage: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>>;
         action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1783,7 +1794,8 @@ declare const interactivePanelSchema: z.ZodObject<{
                 animated: z.ZodOptional<z.ZodBoolean>;
             }, z.core.$strip>>;
             gate: z.ZodOptional<z.ZodObject<{
-                allowedRoleIds: z.ZodArray<z.ZodString>;
+                allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
+                requireServerTag: z.ZodOptional<z.ZodBoolean>;
                 denyMessage: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>>;
             action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -2034,7 +2046,8 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
                 danger: "danger";
             }>>;
             gate: z.ZodOptional<z.ZodObject<{
-                allowedRoleIds: z.ZodArray<z.ZodString>;
+                allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
+                requireServerTag: z.ZodOptional<z.ZodBoolean>;
                 denyMessage: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>>;
             action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -2072,7 +2085,8 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
                     animated: z.ZodOptional<z.ZodBoolean>;
                 }, z.core.$strip>>;
                 gate: z.ZodOptional<z.ZodObject<{
-                    allowedRoleIds: z.ZodArray<z.ZodString>;
+                    allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
+                    requireServerTag: z.ZodOptional<z.ZodBoolean>;
                     denyMessage: z.ZodOptional<z.ZodString>;
                 }, z.core.$strip>>;
                 action: z.ZodDiscriminatedUnion<[z.ZodObject<{
