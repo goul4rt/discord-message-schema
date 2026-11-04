@@ -65,6 +65,7 @@ __export(index_exports, {
   sendMessageResponseSchema: () => sendMessageResponseSchema,
   separatorSchema: () => separatorSchema,
   snowflakeSchema: () => snowflakeSchema,
+  tagLossDmSchema: () => tagLossDmSchema,
   textDisplaySchema: () => textDisplaySchema,
   thumbnailSchema: () => thumbnailSchema,
   urlSchema: () => urlSchema,
@@ -554,9 +555,16 @@ var sendMessageResponseSchema = import_zod6.z.discriminatedUnion("ok", [
 
 // src/schema/interactive-panels.ts
 var import_zod7 = require("zod");
+var tagLossDmSchema = import_zod7.z.discriminatedUnion("kind", [
+  import_zod7.z.object({ kind: import_zod7.z.literal("text"), text: import_zod7.z.string().min(1).max(2e3) }),
+  import_zod7.z.object({ kind: import_zod7.z.literal("saved_message"), savedMessageId: import_zod7.z.string().min(1) })
+]);
 var panelGateSchema = import_zod7.z.object({
   allowedRoleIds: import_zod7.z.array(snowflakeSchema).default([]),
   requireServerTag: import_zod7.z.boolean().optional(),
+  /** DM opcional quando a pessoa tira a tag e perde o cargo da recompensa.
+   *  Frequência travada pelo bot (não configurável por servidor). */
+  tagLossDm: tagLossDmSchema.optional(),
   denyMessage: import_zod7.z.string().max(2e3).optional()
 }).refine((g) => g.allowedRoleIds.length > 0 || g.requireServerTag === true, {
   message: "gate precisa de cargos permitidos ou da tag do servidor",
@@ -845,6 +853,7 @@ var eventDropsConfigSchema = import_zod8.z.object({
   sendMessageResponseSchema,
   separatorSchema,
   snowflakeSchema,
+  tagLossDmSchema,
   textDisplaySchema,
   thumbnailSchema,
   urlSchema,

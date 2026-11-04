@@ -10,6 +10,12 @@ import { embedSchema } from './embed';
 import { componentV2Schema, componentsV2TotalChars } from './components-v2';
 import { LIMITS } from '../limits';
 
+/** Mensagem enviada por DM ao perder a tag: texto ou mensagem do criador (embed). */
+export const tagLossDmSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('text'), text: z.string().min(1).max(2000) }),
+  z.object({ kind: z.literal('saved_message'), savedMessageId: z.string().min(1) }),
+]);
+
 /**
  * Quem pode usar o componente. Condições somam (E): cargos permitidos e/ou
  * exigir a tag do servidor ativa no perfil (primary guild do Discord).
@@ -19,6 +25,9 @@ export const panelGateSchema = z
   .object({
     allowedRoleIds: z.array(snowflakeSchema).default([]),
     requireServerTag: z.boolean().optional(),
+    /** DM opcional quando a pessoa tira a tag e perde o cargo da recompensa.
+     *  Frequência travada pelo bot (não configurável por servidor). */
+    tagLossDm: tagLossDmSchema.optional(),
     denyMessage: z.string().max(2000).optional(),
   })
   .refine((g) => g.allowedRoleIds.length > 0 || g.requireServerTag === true, {
@@ -143,6 +152,7 @@ export const interactivePanelsConfigSchema = z.object({
 });
 
 export type PanelGate = z.infer<typeof panelGateSchema>;
+export type TagLossDm = z.infer<typeof tagLossDmSchema>;
 export type PanelAction = z.infer<typeof panelActionSchema>;
 export type PanelButton = z.infer<typeof panelButtonSchema>;
 export type PanelComponent = z.infer<typeof panelComponentSchema>;

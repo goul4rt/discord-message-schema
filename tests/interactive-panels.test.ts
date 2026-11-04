@@ -56,6 +56,11 @@ describe('interactivePanelsConfigSchema', () => {
     expect(panelGateSchema.safeParse({ allowedRoleIds: [] }).success).toBe(false);
     expect(panelGateSchema.safeParse({ requireServerTag: false }).success).toBe(false);
   });
+  it('gate aceita DM de perda de tag (texto ou mensagem salva)', () => {
+    expect(panelGateSchema.safeParse({ requireServerTag: true, tagLossDm: { kind: 'text', text: 'Volte!' } }).success).toBe(true);
+    expect(panelGateSchema.safeParse({ requireServerTag: true, tagLossDm: { kind: 'saved_message', savedMessageId: 'm1' } }).success).toBe(true);
+    expect(panelGateSchema.safeParse({ requireServerTag: true, tagLossDm: { kind: 'text', text: '' } }).success).toBe(false);
+  });
   it('rejeita botão sem ação', () => {
     const bad = interactivePanelsConfigSchema.safeParse({
       enabled: true,

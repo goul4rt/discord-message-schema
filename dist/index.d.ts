@@ -1301,6 +1301,14 @@ type SendMessageResponse = z.infer<typeof sendMessageResponseSchema>;
  * ação + um gate de permissão opcional (sem action-sets — ver spec SP2).
  */
 
+/** Mensagem enviada por DM ao perder a tag: texto ou mensagem do criador (embed). */
+declare const tagLossDmSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
+    kind: z.ZodLiteral<"text">;
+    text: z.ZodString;
+}, z.core.$strip>, z.ZodObject<{
+    kind: z.ZodLiteral<"saved_message">;
+    savedMessageId: z.ZodString;
+}, z.core.$strip>], "kind">;
 /**
  * Quem pode usar o componente. Condições somam (E): cargos permitidos e/ou
  * exigir a tag do servidor ativa no perfil (primary guild do Discord).
@@ -1309,6 +1317,13 @@ type SendMessageResponse = z.infer<typeof sendMessageResponseSchema>;
 declare const panelGateSchema: z.ZodObject<{
     allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
     requireServerTag: z.ZodOptional<z.ZodBoolean>;
+    tagLossDm: z.ZodOptional<z.ZodDiscriminatedUnion<[z.ZodObject<{
+        kind: z.ZodLiteral<"text">;
+        text: z.ZodString;
+    }, z.core.$strip>, z.ZodObject<{
+        kind: z.ZodLiteral<"saved_message">;
+        savedMessageId: z.ZodString;
+    }, z.core.$strip>], "kind">>;
     denyMessage: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 declare const panelActionSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1350,6 +1365,13 @@ declare const panelButtonSchema: z.ZodObject<{
     gate: z.ZodOptional<z.ZodObject<{
         allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
         requireServerTag: z.ZodOptional<z.ZodBoolean>;
+        tagLossDm: z.ZodOptional<z.ZodDiscriminatedUnion<[z.ZodObject<{
+            kind: z.ZodLiteral<"text">;
+            text: z.ZodString;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"saved_message">;
+            savedMessageId: z.ZodString;
+        }, z.core.$strip>], "kind">>;
         denyMessage: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>>;
     action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1386,6 +1408,13 @@ declare const panelSelectOptionSchema: z.ZodObject<{
     gate: z.ZodOptional<z.ZodObject<{
         allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
         requireServerTag: z.ZodOptional<z.ZodBoolean>;
+        tagLossDm: z.ZodOptional<z.ZodDiscriminatedUnion<[z.ZodObject<{
+            kind: z.ZodLiteral<"text">;
+            text: z.ZodString;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"saved_message">;
+            savedMessageId: z.ZodString;
+        }, z.core.$strip>], "kind">>;
         denyMessage: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>>;
     action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1426,6 +1455,13 @@ declare const panelSelectSchema: z.ZodObject<{
         gate: z.ZodOptional<z.ZodObject<{
             allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
             requireServerTag: z.ZodOptional<z.ZodBoolean>;
+            tagLossDm: z.ZodOptional<z.ZodDiscriminatedUnion<[z.ZodObject<{
+                kind: z.ZodLiteral<"text">;
+                text: z.ZodString;
+            }, z.core.$strip>, z.ZodObject<{
+                kind: z.ZodLiteral<"saved_message">;
+                savedMessageId: z.ZodString;
+            }, z.core.$strip>], "kind">>;
             denyMessage: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>>;
         action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1469,6 +1505,13 @@ declare const panelComponentSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
     gate: z.ZodOptional<z.ZodObject<{
         allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
         requireServerTag: z.ZodOptional<z.ZodBoolean>;
+        tagLossDm: z.ZodOptional<z.ZodDiscriminatedUnion<[z.ZodObject<{
+            kind: z.ZodLiteral<"text">;
+            text: z.ZodString;
+        }, z.core.$strip>, z.ZodObject<{
+            kind: z.ZodLiteral<"saved_message">;
+            savedMessageId: z.ZodString;
+        }, z.core.$strip>], "kind">>;
         denyMessage: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>>;
     action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1508,6 +1551,13 @@ declare const panelComponentSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
         gate: z.ZodOptional<z.ZodObject<{
             allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
             requireServerTag: z.ZodOptional<z.ZodBoolean>;
+            tagLossDm: z.ZodOptional<z.ZodDiscriminatedUnion<[z.ZodObject<{
+                kind: z.ZodLiteral<"text">;
+                text: z.ZodString;
+            }, z.core.$strip>, z.ZodObject<{
+                kind: z.ZodLiteral<"saved_message">;
+                savedMessageId: z.ZodString;
+            }, z.core.$strip>], "kind">>;
             denyMessage: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>>;
         action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1757,6 +1807,13 @@ declare const interactivePanelSchema: z.ZodObject<{
         gate: z.ZodOptional<z.ZodObject<{
             allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
             requireServerTag: z.ZodOptional<z.ZodBoolean>;
+            tagLossDm: z.ZodOptional<z.ZodDiscriminatedUnion<[z.ZodObject<{
+                kind: z.ZodLiteral<"text">;
+                text: z.ZodString;
+            }, z.core.$strip>, z.ZodObject<{
+                kind: z.ZodLiteral<"saved_message">;
+                savedMessageId: z.ZodString;
+            }, z.core.$strip>], "kind">>;
             denyMessage: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>>;
         action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -1796,6 +1853,13 @@ declare const interactivePanelSchema: z.ZodObject<{
             gate: z.ZodOptional<z.ZodObject<{
                 allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
                 requireServerTag: z.ZodOptional<z.ZodBoolean>;
+                tagLossDm: z.ZodOptional<z.ZodDiscriminatedUnion<[z.ZodObject<{
+                    kind: z.ZodLiteral<"text">;
+                    text: z.ZodString;
+                }, z.core.$strip>, z.ZodObject<{
+                    kind: z.ZodLiteral<"saved_message">;
+                    savedMessageId: z.ZodString;
+                }, z.core.$strip>], "kind">>;
                 denyMessage: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>>;
             action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -2048,6 +2112,13 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
             gate: z.ZodOptional<z.ZodObject<{
                 allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
                 requireServerTag: z.ZodOptional<z.ZodBoolean>;
+                tagLossDm: z.ZodOptional<z.ZodDiscriminatedUnion<[z.ZodObject<{
+                    kind: z.ZodLiteral<"text">;
+                    text: z.ZodString;
+                }, z.core.$strip>, z.ZodObject<{
+                    kind: z.ZodLiteral<"saved_message">;
+                    savedMessageId: z.ZodString;
+                }, z.core.$strip>], "kind">>;
                 denyMessage: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>>;
             action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -2087,6 +2158,13 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
                 gate: z.ZodOptional<z.ZodObject<{
                     allowedRoleIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
                     requireServerTag: z.ZodOptional<z.ZodBoolean>;
+                    tagLossDm: z.ZodOptional<z.ZodDiscriminatedUnion<[z.ZodObject<{
+                        kind: z.ZodLiteral<"text">;
+                        text: z.ZodString;
+                    }, z.core.$strip>, z.ZodObject<{
+                        kind: z.ZodLiteral<"saved_message">;
+                        savedMessageId: z.ZodString;
+                    }, z.core.$strip>], "kind">>;
                     denyMessage: z.ZodOptional<z.ZodString>;
                 }, z.core.$strip>>;
                 action: z.ZodDiscriminatedUnion<[z.ZodObject<{
@@ -2115,10 +2193,11 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
     }, z.core.$strip>>>;
 }, z.core.$strip>;
 type PanelGate = z.infer<typeof panelGateSchema>;
+type TagLossDm = z.infer<typeof tagLossDmSchema>;
 type PanelAction = z.infer<typeof panelActionSchema>;
 type PanelButton = z.infer<typeof panelButtonSchema>;
 type PanelComponent = z.infer<typeof panelComponentSchema>;
 type InteractivePanel = z.infer<typeof interactivePanelSchema>;
 type InteractivePanelsConfig = z.infer<typeof interactivePanelsConfigSchema>;
 
-export { type ActionRow, type AllowedMentions, type ComponentV2, type Container, ERROR_CODES, type Embed, type EmbedField, type Emoji, type InteractivePanel, type InteractivePanelsConfig, LIMITS, type Limits, type LinkButton, type MediaGallery, type MediaItem, type Message, type MessageComponent, PLACEHOLDERS, PLACEHOLDER_PATTERN, type PanelAction, type PanelButton, type PanelComponent, type PanelGate, type PlaceholderKey, type Section, type SendErrorCode, type SendMessageRequest, type SendMessageResponse, type Separator, type TextDisplay, type Thumbnail, actionButtonSchema, actionRowSchema, allowedMentionsSchema, componentSchema, componentV2Schema, componentsV2TotalChars, containerSchema, containerSubComponentSchema, containsPlaceholder, embedFieldSchema, embedSchema, embedTotalChars, emojiSchema, interactivePanelSchema, interactivePanelsConfigSchema, isComponentV2, linkButtonSchema, mediaGallerySchema, mediaItemSchema, messageSchema, panelActionSchema, panelButtonSchema, panelComponentSchema, panelGateSchema, panelSelectOptionSchema, panelSelectSchema, resolvePlaceholders, sectionSchema, selectMenuSchema, selectOptionSchema, sendErrorSchema, sendMessageRequestSchema, sendMessageResponseSchema, separatorSchema, snowflakeSchema, textDisplaySchema, thumbnailSchema, urlSchema, usernameSchema };
+export { type ActionRow, type AllowedMentions, type ComponentV2, type Container, ERROR_CODES, type Embed, type EmbedField, type Emoji, type InteractivePanel, type InteractivePanelsConfig, LIMITS, type Limits, type LinkButton, type MediaGallery, type MediaItem, type Message, type MessageComponent, PLACEHOLDERS, PLACEHOLDER_PATTERN, type PanelAction, type PanelButton, type PanelComponent, type PanelGate, type PlaceholderKey, type Section, type SendErrorCode, type SendMessageRequest, type SendMessageResponse, type Separator, type TagLossDm, type TextDisplay, type Thumbnail, actionButtonSchema, actionRowSchema, allowedMentionsSchema, componentSchema, componentV2Schema, componentsV2TotalChars, containerSchema, containerSubComponentSchema, containsPlaceholder, embedFieldSchema, embedSchema, embedTotalChars, emojiSchema, interactivePanelSchema, interactivePanelsConfigSchema, isComponentV2, linkButtonSchema, mediaGallerySchema, mediaItemSchema, messageSchema, panelActionSchema, panelButtonSchema, panelComponentSchema, panelGateSchema, panelSelectOptionSchema, panelSelectSchema, resolvePlaceholders, sectionSchema, selectMenuSchema, selectOptionSchema, sendErrorSchema, sendMessageRequestSchema, sendMessageResponseSchema, separatorSchema, snowflakeSchema, tagLossDmSchema, textDisplaySchema, thumbnailSchema, urlSchema, usernameSchema };

@@ -67,6 +67,7 @@ export {
 } from './wire';
 export {
   panelGateSchema,
+  tagLossDmSchema,
   panelActionSchema,
   panelButtonSchema,
   panelSelectOptionSchema,
@@ -75,6 +76,7 @@ export {
   interactivePanelSchema,
   interactivePanelsConfigSchema,
   type PanelGate,
+  type TagLossDm,
   type PanelAction,
   type PanelButton,
   type PanelComponent,
