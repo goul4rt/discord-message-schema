@@ -6,7 +6,7 @@
 import { z } from 'zod';
 import { snowflakeSchema } from '../snowflake';
 import { emojiSchema } from './components';
-import { embedSchema } from './embed';
+import { embedSchema, embedTotalChars } from './embed';
 import { componentV2Schema, componentsV2TotalChars } from './components-v2';
 import { LIMITS } from '../limits';
 
@@ -108,7 +108,10 @@ export const interactivePanelSchema = z
     channelId: snowflakeSchema,
     messageId: snowflakeSchema.optional(),
     content: z.string().max(2000).optional(),
+    /** Legado (até 0.9): um embed só. Painéis novos gravam `embeds`; o bot
+     *  posta `embeds ?? [embed]`. */
     embed: embedSchema.optional(),
+    embeds: z.array(embedSchema).min(1).max(LIMITS.EMBEDS_MAX).optional(),
     /** Corpo em Components V2 (flag 1<<15 derivada pelo bot no deploy — a
      *  flag NÃO é persistida). Exclusivo com `embed`/`content`: o Discord não
      *  aceita content/embeds numa mensagem com a flag V2. */
@@ -120,8 +123,25 @@ export const interactivePanelSchema = z
     components: z.array(panelComponentSchema).min(1).max(40),
   })
   .superRefine((panel, ctx) => {
+    if (panel.embeds) {
+      if (panel.embed) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['embed'],
+          message: 'use embeds ou embed, não os dois',
+        });
+      }
+      const total = panel.embeds.reduce((sum, e) => sum + embedTotalChars(e), 0);
+      if (total > LIMITS.EMBEDS_TOTAL_CHARS_MAX) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['embeds'],
+          message: `os embeds passam do teto de ${LIMITS.EMBEDS_TOTAL_CHARS_MAX} caracteres somados`,
+        });
+      }
+    }
     if (!panel.componentsV2) return;
-    if (panel.embed) {
+    if (panel.embed || panel.embeds) {
       ctx.addIssue({
         code: 'custom',
         path: ['componentsV2'],

@@ -179,3 +179,41 @@ describe('limites do componentsV2 no painel (0.6.1)', () => {
     expect(interactivePanelSchema.safeParse({ ...base, componentsV2: big }).success).toBe(false);
   });
 });
+
+describe('vários embeds no painel (0.10.0)', () => {
+  const base = {
+    id: 'p1',
+    name: 'X',
+    enabled: true,
+    channelId: ROLE,
+    components: [{ id: 'b1', type: 'button', label: 'Ok', action: { kind: 'reply_text', text: 'oi' } }],
+  };
+
+  it('aceita até 10 embeds e rejeita 11', () => {
+    const e = (i: number) => ({ title: `E${i}` });
+    const ten = Array.from({ length: 10 }, (_, i) => e(i));
+    expect(interactivePanelSchema.safeParse({ ...base, embeds: ten }).success).toBe(true);
+    expect(interactivePanelSchema.safeParse({ ...base, embeds: [...ten, e(10)] }).success).toBe(false);
+  });
+
+  it('rejeita embed e embeds juntos', () => {
+    expect(
+      interactivePanelSchema.safeParse({ ...base, embed: { title: 'a' }, embeds: [{ title: 'b' }] }).success
+    ).toBe(false);
+  });
+
+  it('rejeita embeds que somados passam de 6000 caracteres', () => {
+    const big = { description: 'x'.repeat(3500) };
+    expect(interactivePanelSchema.safeParse({ ...base, embeds: [big, big] }).success).toBe(false);
+  });
+
+  it('embeds e componentsV2 são mutuamente exclusivos', () => {
+    expect(
+      interactivePanelSchema.safeParse({
+        ...base,
+        embeds: [{ title: 'a' }],
+        componentsV2: [{ type: 10, content: 'x' }],
+      }).success
+    ).toBe(false);
+  });
+});
