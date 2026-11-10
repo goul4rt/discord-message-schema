@@ -1617,6 +1617,33 @@ declare const interactivePanelSchema: z.ZodObject<{
             inline: z.ZodOptional<z.ZodBoolean>;
         }, z.core.$strip>>>;
     }, z.core.$strip>>;
+    embeds: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        title: z.ZodOptional<z.ZodString>;
+        description: z.ZodOptional<z.ZodString>;
+        url: z.ZodOptional<z.ZodString>;
+        timestamp: z.ZodOptional<z.ZodISODateTime>;
+        color: z.ZodOptional<z.ZodNumber>;
+        footer: z.ZodOptional<z.ZodObject<{
+            text: z.ZodString;
+            icon_url: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>>;
+        author: z.ZodOptional<z.ZodObject<{
+            name: z.ZodString;
+            url: z.ZodOptional<z.ZodString>;
+            icon_url: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>>;
+        image: z.ZodOptional<z.ZodObject<{
+            url: z.ZodString;
+        }, z.core.$strip>>;
+        thumbnail: z.ZodOptional<z.ZodObject<{
+            url: z.ZodString;
+        }, z.core.$strip>>;
+        fields: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            name: z.ZodString;
+            value: z.ZodString;
+            inline: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>>>;
+    }, z.core.$strip>>>;
     componentsV2: z.ZodOptional<z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
         type: z.ZodLiteral<17>;
         components: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
@@ -1922,6 +1949,33 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
                 inline: z.ZodOptional<z.ZodBoolean>;
             }, z.core.$strip>>>;
         }, z.core.$strip>>;
+        embeds: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            title: z.ZodOptional<z.ZodString>;
+            description: z.ZodOptional<z.ZodString>;
+            url: z.ZodOptional<z.ZodString>;
+            timestamp: z.ZodOptional<z.ZodISODateTime>;
+            color: z.ZodOptional<z.ZodNumber>;
+            footer: z.ZodOptional<z.ZodObject<{
+                text: z.ZodString;
+                icon_url: z.ZodOptional<z.ZodString>;
+            }, z.core.$strip>>;
+            author: z.ZodOptional<z.ZodObject<{
+                name: z.ZodString;
+                url: z.ZodOptional<z.ZodString>;
+                icon_url: z.ZodOptional<z.ZodString>;
+            }, z.core.$strip>>;
+            image: z.ZodOptional<z.ZodObject<{
+                url: z.ZodString;
+            }, z.core.$strip>>;
+            thumbnail: z.ZodOptional<z.ZodObject<{
+                url: z.ZodString;
+            }, z.core.$strip>>;
+            fields: z.ZodOptional<z.ZodArray<z.ZodObject<{
+                name: z.ZodString;
+                value: z.ZodString;
+                inline: z.ZodOptional<z.ZodBoolean>;
+            }, z.core.$strip>>>;
+        }, z.core.$strip>>>;
         componentsV2: z.ZodOptional<z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
             type: z.ZodLiteral<17>;
             components: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
