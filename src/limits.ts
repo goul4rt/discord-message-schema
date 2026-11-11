@@ -27,10 +27,18 @@ export const LIMITS = {
 
   /** Message flag `IsComponentsV2` (1 << 15). Imutável depois de enviada. */
   FLAG_COMPONENTS_V2: 32768,
-  /** Componentes na raiz de uma mensagem V2. */
-  V2_COMPONENTS_MAX: 10,
-  V2_CONTAINER_CHILDREN_MAX: 10,
-  V2_SECTION_TEXTS_MAX: 5,
+  /** Componentes na raiz de uma mensagem V2 (o teto real é o total abaixo). */
+  V2_COMPONENTS_MAX: 40,
+  /** Filhos de um container: o próprio container já conta 1 dos 40. */
+  V2_CONTAINER_CHILDREN_MAX: 39,
+  /** A API recusa section com mais de 3 textos ("between 1 and 3"). */
+  V2_SECTION_TEXTS_MAX: 3,
+  /**
+   * Total de componentes de uma mensagem V2, aninhados e acessórios incluídos
+   * (itens de galeria não contam). Conferido na API em 11/11/2026:
+   * 41 → COMPONENT_MAX_TOTAL_COMPONENTS_EXCEEDED.
+   */
+  V2_TOTAL_COMPONENTS_MAX: 40,
   V2_GALLERY_ITEMS_MAX: 10,
   V2_TEXT_DISPLAY_MAX: 4000,
   /** Soma dos text displays de toda a árvore — análogo aos 6000 dos embeds. */

@@ -133,3 +133,15 @@ export function componentsV2TotalChars(components: ComponentV2[]): number {
   }
   return total;
 }
+
+/**
+ * Componentes como o Discord conta para o teto de 40: todo nó com `type`
+ * numérico, aninhados e acessórios incluídos. Itens de galeria e emojis não
+ * têm `type`, então ficam de fora — igual à API.
+ */
+export function countComponentsV2(value: unknown): number {
+  if (Array.isArray(value)) return value.reduce<number>((n, v) => n + countComponentsV2(v), 0);
+  if (!value || typeof value !== 'object') return 0;
+  const self = typeof (value as { type?: unknown }).type === 'number' ? 1 : 0;
+  return self + Object.values(value).reduce<number>((n, v) => n + countComponentsV2(v), 0);
+}

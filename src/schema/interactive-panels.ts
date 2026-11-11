@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { snowflakeSchema } from '../snowflake';
 import { emojiSchema } from './components';
 import { embedSchema, embedTotalChars } from './embed';
-import { componentV2Schema, componentsV2TotalChars } from './components-v2';
+import { componentV2Schema, componentsV2TotalChars, countComponentsV2 } from './components-v2';
 import { LIMITS } from '../limits';
 
 /** Mensagem enviada por DM ao perder a tag: texto ou mensagem do criador (embed). */
@@ -92,6 +92,13 @@ export const panelSelectSchema = z.object({
   id: z.string().min(1),
   type: z.literal('select'),
   placeholder: z.string().max(150).optional(),
+  /**
+   * Volta o menu ao placeholder depois de cada escolha. Sem isso o Discord
+   * continua mostrando a opção escolhida e escolher a mesma de novo não manda
+   * nada (num menu de cargo liga/desliga, não dá para tirar o cargo).
+   * Ausente = true: o bot limpa por padrão; `false` mantém a escolha visível.
+   */
+  clearAfterUse: z.boolean().optional(),
   options: z.array(panelSelectOptionSchema).min(1).max(25),
 });
 
@@ -99,6 +106,30 @@ export const panelComponentSchema = z.discriminatedUnion('type', [
   panelButtonSchema,
   panelSelectSchema,
 ]);
+
+/**
+ * Quantas linhas as automações ocupam no deploy — espelha o bot: botões
+ * seguidos agrupam de 5 em 5 e cada menu ocupa a sua linha (e fecha o grupo
+ * de botões anterior, então a ordem importa).
+ */
+export function countPanelAutomationRows(components: { type: 'button' | 'select' }[]): number {
+  let rows = 0;
+  let buttons = 0;
+  for (const c of components) {
+    if (c.type === 'select') {
+      rows += Math.ceil(buttons / 5) + 1;
+      buttons = 0;
+    } else buttons++;
+  }
+  return rows + Math.ceil(buttons / 5);
+}
+
+/** Componentes que as automações somam no teto de 40: linhas + cada botão/menu. */
+export function countPanelAutomationComponents(
+  components: { type: 'button' | 'select' }[],
+): number {
+  return countPanelAutomationRows(components) + components.length;
+}
 
 export const interactivePanelSchema = z
   .object({
@@ -157,6 +188,15 @@ export const interactivePanelSchema = z
     }
     // Teto agregado de caracteres da mensagem V2 — cada nó tem limite próprio,
     // mas a soma também estoura na API se passar do total.
+    const total =
+      countComponentsV2(panel.componentsV2) + countPanelAutomationComponents(panel.components);
+    if (total > LIMITS.V2_TOTAL_COMPONENTS_MAX) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['componentsV2'],
+        message: `blocos + botões/menus somam ${total} componentes; o Discord aceita ${LIMITS.V2_TOTAL_COMPONENTS_MAX}`,
+      });
+    }
     if (componentsV2TotalChars(panel.componentsV2) > LIMITS.V2_TOTAL_CHARS_MAX) {
       ctx.addIssue({
         code: 'custom',
@@ -176,5 +216,6 @@ export type TagLossDm = z.infer<typeof tagLossDmSchema>;
 export type PanelAction = z.infer<typeof panelActionSchema>;
 export type PanelButton = z.infer<typeof panelButtonSchema>;
 export type PanelComponent = z.infer<typeof panelComponentSchema>;
+export type PanelSelect = z.infer<typeof panelSelectSchema>;
 export type InteractivePanel = z.infer<typeof interactivePanelSchema>;
 export type InteractivePanelsConfig = z.infer<typeof interactivePanelsConfigSchema>;
