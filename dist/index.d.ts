@@ -29,10 +29,18 @@ declare const LIMITS: {
     readonly URL_MAX: 2048;
     /** Message flag `IsComponentsV2` (1 << 15). Imutável depois de enviada. */
     readonly FLAG_COMPONENTS_V2: 32768;
-    /** Componentes na raiz de uma mensagem V2. */
-    readonly V2_COMPONENTS_MAX: 10;
-    readonly V2_CONTAINER_CHILDREN_MAX: 10;
-    readonly V2_SECTION_TEXTS_MAX: 5;
+    /** Componentes na raiz de uma mensagem V2 (o teto real é o total abaixo). */
+    readonly V2_COMPONENTS_MAX: 40;
+    /** Filhos de um container: o próprio container já conta 1 dos 40. */
+    readonly V2_CONTAINER_CHILDREN_MAX: 39;
+    /** A API recusa section com mais de 3 textos ("between 1 and 3"). */
+    readonly V2_SECTION_TEXTS_MAX: 3;
+    /**
+     * Total de componentes de uma mensagem V2, aninhados e acessórios incluídos
+     * (itens de galeria não contam). Conferido na API em 11/11/2026:
+     * 41 → COMPONENT_MAX_TOTAL_COMPONENTS_EXCEEDED.
+     */
+    readonly V2_TOTAL_COMPONENTS_MAX: 40;
     readonly V2_GALLERY_ITEMS_MAX: 10;
     readonly V2_TEXT_DISPLAY_MAX: 4000;
     /** Soma dos text displays de toda a árvore — análogo aos 6000 dos embeds. */
@@ -56,7 +64,33 @@ declare const PLACEHOLDERS: readonly [{
     readonly token: "{{serverIcon}}";
     readonly description: "URL do ícone do servidor";
     readonly example: "https://cdn.discordapp.com/embed/avatars/0.png";
+}, {
+    readonly key: "now";
+    readonly token: "{{now}}";
+    readonly description: "Data e hora do envio";
+    readonly example: "<t:1794407400:f>";
+}, {
+    readonly key: "nowDate";
+    readonly token: "{{nowDate}}";
+    readonly description: "Data do envio";
+    readonly example: "<t:1794407400:D>";
+}, {
+    readonly key: "nowTime";
+    readonly token: "{{nowTime}}";
+    readonly description: "Hora do envio";
+    readonly example: "<t:1794407400:t>";
+}, {
+    readonly key: "nowRelative";
+    readonly token: "{{nowRelative}}";
+    readonly description: "Há quanto tempo foi enviado (ex.: \"há 5 minutos\")";
+    readonly example: "<t:1794407400:R>";
 }];
+/** Estilos de timestamp do Discord (`<t:segundos:estilo>`). */
+type TimestampStyle = 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R';
+/** `<t:segundos:estilo>` — o Discord mostra no fuso e idioma de quem lê. */
+declare function discordTimestamp(date: Date | number, style?: TimestampStyle): string;
+/** Valores de `{{now}}`, `{{nowDate}}`, `{{nowTime}}` e `{{nowRelative}}` para `date`. */
+declare function timePlaceholderValues(date: Date): Record<string, string>;
 type PlaceholderKey = (typeof PLACEHOLDERS)[number]['key'];
 /** Non-global on purpose: `.test()` with the `g` flag is stateful. */
 declare const PLACEHOLDER_PATTERN: RegExp;
@@ -714,6 +748,12 @@ declare function isComponentV2(component: {
  * agregado para mensagens V2, análogo aos 6000 chars dos embeds.
  */
 declare function componentsV2TotalChars(components: ComponentV2[]): number;
+/**
+ * Componentes como o Discord conta para o teto de 40: todo nó com `type`
+ * numérico, aninhados e acessórios incluídos. Itens de galeria e emojis não
+ * têm `type`, então ficam de fora — igual à API.
+ */
+declare function countComponentsV2(value: unknown): number;
 
 /**
  * Ported and adapted from embed-generator
@@ -1443,6 +1483,7 @@ declare const panelSelectSchema: z.ZodObject<{
     id: z.ZodString;
     type: z.ZodLiteral<"select">;
     placeholder: z.ZodOptional<z.ZodString>;
+    clearAfterUse: z.ZodOptional<z.ZodBoolean>;
     options: z.ZodArray<z.ZodObject<{
         id: z.ZodString;
         label: z.ZodString;
@@ -1539,6 +1580,7 @@ declare const panelComponentSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
     id: z.ZodString;
     type: z.ZodLiteral<"select">;
     placeholder: z.ZodOptional<z.ZodString>;
+    clearAfterUse: z.ZodOptional<z.ZodBoolean>;
     options: z.ZodArray<z.ZodObject<{
         id: z.ZodString;
         label: z.ZodString;
@@ -1583,6 +1625,18 @@ declare const panelComponentSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
         }, z.core.$strip>], "kind">;
     }, z.core.$strip>>;
 }, z.core.$strip>], "type">;
+/**
+ * Quantas linhas as automações ocupam no deploy — espelha o bot: botões
+ * seguidos agrupam de 5 em 5 e cada menu ocupa a sua linha (e fecha o grupo
+ * de botões anterior, então a ordem importa).
+ */
+declare function countPanelAutomationRows(components: {
+    type: 'button' | 'select';
+}[]): number;
+/** Componentes que as automações somam no teto de 40: linhas + cada botão/menu. */
+declare function countPanelAutomationComponents(components: {
+    type: 'button' | 'select';
+}[]): number;
 declare const interactivePanelSchema: z.ZodObject<{
     id: z.ZodString;
     name: z.ZodString;
@@ -1868,6 +1922,7 @@ declare const interactivePanelSchema: z.ZodObject<{
         id: z.ZodString;
         type: z.ZodLiteral<"select">;
         placeholder: z.ZodOptional<z.ZodString>;
+        clearAfterUse: z.ZodOptional<z.ZodBoolean>;
         options: z.ZodArray<z.ZodObject<{
             id: z.ZodString;
             label: z.ZodString;
@@ -2200,6 +2255,7 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
             id: z.ZodString;
             type: z.ZodLiteral<"select">;
             placeholder: z.ZodOptional<z.ZodString>;
+            clearAfterUse: z.ZodOptional<z.ZodBoolean>;
             options: z.ZodArray<z.ZodObject<{
                 id: z.ZodString;
                 label: z.ZodString;
@@ -2251,7 +2307,8 @@ type TagLossDm = z.infer<typeof tagLossDmSchema>;
 type PanelAction = z.infer<typeof panelActionSchema>;
 type PanelButton = z.infer<typeof panelButtonSchema>;
 type PanelComponent = z.infer<typeof panelComponentSchema>;
+type PanelSelect = z.infer<typeof panelSelectSchema>;
 type InteractivePanel = z.infer<typeof interactivePanelSchema>;
 type InteractivePanelsConfig = z.infer<typeof interactivePanelsConfigSchema>;
 
-export { type ActionRow, type AllowedMentions, type ComponentV2, type Container, ERROR_CODES, type Embed, type EmbedField, type Emoji, type InteractivePanel, type InteractivePanelsConfig, LIMITS, type Limits, type LinkButton, type MediaGallery, type MediaItem, type Message, type MessageComponent, PLACEHOLDERS, PLACEHOLDER_PATTERN, type PanelAction, type PanelButton, type PanelComponent, type PanelGate, type PlaceholderKey, type Section, type SendErrorCode, type SendMessageRequest, type SendMessageResponse, type Separator, type TagLossDm, type TextDisplay, type Thumbnail, actionButtonSchema, actionRowSchema, allowedMentionsSchema, componentSchema, componentV2Schema, componentsV2TotalChars, containerSchema, containerSubComponentSchema, containsPlaceholder, embedFieldSchema, embedSchema, embedTotalChars, emojiSchema, interactivePanelSchema, interactivePanelsConfigSchema, isComponentV2, linkButtonSchema, mediaGallerySchema, mediaItemSchema, messageSchema, panelActionSchema, panelButtonSchema, panelComponentSchema, panelGateSchema, panelSelectOptionSchema, panelSelectSchema, resolvePlaceholders, sectionSchema, selectMenuSchema, selectOptionSchema, sendErrorSchema, sendMessageRequestSchema, sendMessageResponseSchema, separatorSchema, snowflakeSchema, tagLossDmSchema, textDisplaySchema, thumbnailSchema, urlSchema, usernameSchema };
+export { type ActionRow, type AllowedMentions, type ComponentV2, type Container, ERROR_CODES, type Embed, type EmbedField, type Emoji, type InteractivePanel, type InteractivePanelsConfig, LIMITS, type Limits, type LinkButton, type MediaGallery, type MediaItem, type Message, type MessageComponent, PLACEHOLDERS, PLACEHOLDER_PATTERN, type PanelAction, type PanelButton, type PanelComponent, type PanelGate, type PanelSelect, type PlaceholderKey, type Section, type SendErrorCode, type SendMessageRequest, type SendMessageResponse, type Separator, type TagLossDm, type TextDisplay, type Thumbnail, type TimestampStyle, actionButtonSchema, actionRowSchema, allowedMentionsSchema, componentSchema, componentV2Schema, componentsV2TotalChars, containerSchema, containerSubComponentSchema, containsPlaceholder, countComponentsV2, countPanelAutomationComponents, countPanelAutomationRows, discordTimestamp, embedFieldSchema, embedSchema, embedTotalChars, emojiSchema, interactivePanelSchema, interactivePanelsConfigSchema, isComponentV2, linkButtonSchema, mediaGallerySchema, mediaItemSchema, messageSchema, panelActionSchema, panelButtonSchema, panelComponentSchema, panelGateSchema, panelSelectOptionSchema, panelSelectSchema, resolvePlaceholders, sectionSchema, selectMenuSchema, selectOptionSchema, sendErrorSchema, sendMessageRequestSchema, sendMessageResponseSchema, separatorSchema, snowflakeSchema, tagLossDmSchema, textDisplaySchema, thumbnailSchema, timePlaceholderValues, urlSchema, usernameSchema };

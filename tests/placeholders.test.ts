@@ -6,9 +6,17 @@ import {
 } from '../src/placeholders';
 
 describe('PLACEHOLDERS', () => {
-  it('define server, memberCount e serverIcon com exemplo', () => {
+  it('define as variáveis de servidor e de data/hora com exemplo', () => {
     const keys = PLACEHOLDERS.map((p) => p.key);
-    expect(keys).toEqual(['server', 'memberCount', 'serverIcon']);
+    expect(keys).toEqual([
+      'server',
+      'memberCount',
+      'serverIcon',
+      'now',
+      'nowDate',
+      'nowTime',
+      'nowRelative',
+    ]);
     for (const p of PLACEHOLDERS) {
       expect(p.token).toBe(`{{${p.key}}}`);
       expect(p.description.length).toBeGreaterThan(0);

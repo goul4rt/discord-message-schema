@@ -161,11 +161,12 @@ describe('limites do componentsV2 no painel (0.6.1)', () => {
     components: [{ id: 'b1', type: 'button', label: 'Ok', action: { kind: 'reply_text', text: 'oi' } }],
   };
 
-  it('rejeita árvore com mais de 10 componentes de topo', () => {
-    const tree = Array.from({ length: 11 }, () => ({ type: 10, content: 'x' }));
+  it('aceita mais de 10 blocos de topo e para no teto de 40 com as automações (0.11)', () => {
+    // 1 botão = 1 linha + 1 botão → sobram 38 blocos.
+    const tree = Array.from({ length: 39 }, () => ({ type: 10, content: 'x' }));
     expect(interactivePanelSchema.safeParse({ ...base, componentsV2: tree }).success).toBe(false);
     expect(
-      interactivePanelSchema.safeParse({ ...base, componentsV2: tree.slice(0, 10) }).success
+      interactivePanelSchema.safeParse({ ...base, componentsV2: tree.slice(0, 38) }).success
     ).toBe(true);
   });
 

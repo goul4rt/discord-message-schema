@@ -36,6 +36,10 @@ __export(index_exports, {
   containerSchema: () => containerSchema,
   containerSubComponentSchema: () => containerSubComponentSchema,
   containsPlaceholder: () => containsPlaceholder,
+  countComponentsV2: () => countComponentsV2,
+  countPanelAutomationComponents: () => countPanelAutomationComponents,
+  countPanelAutomationRows: () => countPanelAutomationRows,
+  discordTimestamp: () => discordTimestamp,
   dropOptionSchema: () => dropOptionSchema,
   dropSchema: () => dropSchema,
   embedFieldSchema: () => embedFieldSchema,
@@ -68,6 +72,7 @@ __export(index_exports, {
   tagLossDmSchema: () => tagLossDmSchema,
   textDisplaySchema: () => textDisplaySchema,
   thumbnailSchema: () => thumbnailSchema,
+  timePlaceholderValues: () => timePlaceholderValues,
   urlSchema: () => urlSchema,
   usernameSchema: () => usernameSchema
 });
@@ -97,10 +102,18 @@ var LIMITS = {
   URL_MAX: 2048,
   /** Message flag `IsComponentsV2` (1 << 15). Imutável depois de enviada. */
   FLAG_COMPONENTS_V2: 32768,
-  /** Componentes na raiz de uma mensagem V2. */
-  V2_COMPONENTS_MAX: 10,
-  V2_CONTAINER_CHILDREN_MAX: 10,
-  V2_SECTION_TEXTS_MAX: 5,
+  /** Componentes na raiz de uma mensagem V2 (o teto real é o total abaixo). */
+  V2_COMPONENTS_MAX: 40,
+  /** Filhos de um container: o próprio container já conta 1 dos 40. */
+  V2_CONTAINER_CHILDREN_MAX: 39,
+  /** A API recusa section com mais de 3 textos ("between 1 and 3"). */
+  V2_SECTION_TEXTS_MAX: 3,
+  /**
+   * Total de componentes de uma mensagem V2, aninhados e acessórios incluídos
+   * (itens de galeria não contam). Conferido na API em 11/11/2026:
+   * 41 → COMPONENT_MAX_TOTAL_COMPONENTS_EXCEEDED.
+   */
+  V2_TOTAL_COMPONENTS_MAX: 40,
   V2_GALLERY_ITEMS_MAX: 10,
   V2_TEXT_DISPLAY_MAX: 4e3,
   /** Soma dos text displays de toda a árvore — análogo aos 6000 dos embeds. */
@@ -126,8 +139,47 @@ var PLACEHOLDERS = [
     token: "{{serverIcon}}",
     description: "URL do \xEDcone do servidor",
     example: "https://cdn.discordapp.com/embed/avatars/0.png"
+  },
+  // Data/hora do envio como timestamp do Discord: cada pessoa vê no próprio
+  // fuso e idioma. Numa agendada é a hora de cada disparo. O exemplo fixo é
+  // 11/11/2026 14:30 UTC, que a prévia renderiza como no Discord.
+  {
+    key: "now",
+    token: "{{now}}",
+    description: "Data e hora do envio",
+    example: "<t:1794407400:f>"
+  },
+  {
+    key: "nowDate",
+    token: "{{nowDate}}",
+    description: "Data do envio",
+    example: "<t:1794407400:D>"
+  },
+  {
+    key: "nowTime",
+    token: "{{nowTime}}",
+    description: "Hora do envio",
+    example: "<t:1794407400:t>"
+  },
+  {
+    key: "nowRelative",
+    token: "{{nowRelative}}",
+    description: 'H\xE1 quanto tempo foi enviado (ex.: "h\xE1 5 minutos")',
+    example: "<t:1794407400:R>"
   }
 ];
+function discordTimestamp(date, style = "f") {
+  const seconds = typeof date === "number" ? Math.floor(date) : Math.floor(date.getTime() / 1e3);
+  return `<t:${seconds}:${style}>`;
+}
+function timePlaceholderValues(date) {
+  return {
+    now: discordTimestamp(date, "f"),
+    nowDate: discordTimestamp(date, "D"),
+    nowTime: discordTimestamp(date, "t"),
+    nowRelative: discordTimestamp(date, "R")
+  };
+}
 var PLACEHOLDER_PATTERN = /\{\{\s*([a-zA-Z][a-zA-Z0-9]*)\s*\}\}/;
 var PLACEHOLDER_PATTERN_GLOBAL = new RegExp(PLACEHOLDER_PATTERN.source, "g");
 function containsPlaceholder(text) {
@@ -138,11 +190,14 @@ function resolveText(text, values) {
   return text.replace(PLACEHOLDER_PATTERN_GLOBAL, (match, key) => values[key] ?? match);
 }
 function resolvePlaceholders(value, values) {
+  return resolveDeep(value, { ...timePlaceholderValues(/* @__PURE__ */ new Date()), ...values });
+}
+function resolveDeep(value, values) {
   if (typeof value === "string") {
     return resolveText(value, values);
   }
   if (Array.isArray(value)) {
-    return value.map((item) => resolvePlaceholders(item, values));
+    return value.map((item) => resolveDeep(item, values));
   }
   if (value !== null && typeof value === "object") {
     if (Object.getPrototypeOf(value) !== Object.prototype) {
@@ -150,7 +205,7 @@ function resolvePlaceholders(value, values) {
     }
     const out = {};
     for (const [k, v] of Object.entries(value)) {
-      out[k] = resolvePlaceholders(v, values);
+      out[k] = resolveDeep(v, values);
     }
     return out;
   }
@@ -358,6 +413,12 @@ function componentsV2TotalChars(components) {
   }
   return total;
 }
+function countComponentsV2(value) {
+  if (Array.isArray(value)) return value.reduce((n, v) => n + countComponentsV2(v), 0);
+  if (!value || typeof value !== "object") return 0;
+  const self = typeof value.type === "number" ? 1 : 0;
+  return self + Object.values(value).reduce((n, v) => n + countComponentsV2(v), 0);
+}
 
 // src/schema/message.ts
 var import_zod5 = require("zod");
@@ -408,7 +469,8 @@ var messageSchema = import_zod5.z.object({
   avatar_url: urlSchema.optional(),
   embeds: import_zod5.z.array(embedSchema).max(LIMITS.EMBEDS_MAX).optional(),
   /**
-   * V1: action rows (máx. 5). V2: qualquer componente da raiz (máx. 10).
+   * V1: action rows (máx. 5). V2: qualquer componente da raiz, com teto de
+   * 40 no total da árvore (ver superRefine).
    * Qual dos dois vale é decidido pela flag — ver superRefine abaixo.
    */
   components: import_zod5.z.array(import_zod5.z.union([actionRowSchema, componentV2Schema])).max(LIMITS.V2_COMPONENTS_MAX).optional(),
@@ -442,6 +504,14 @@ var messageSchema = import_zod5.z.object({
         code: "custom",
         path: ["components"],
         message: "Components V2 messages need at least one component"
+      });
+    }
+    const total = countComponentsV2(components);
+    if (total > LIMITS.V2_TOTAL_COMPONENTS_MAX) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["components"],
+        message: `Components V2 messages allow ${LIMITS.V2_TOTAL_COMPONENTS_MAX} components in total, nested ones included (${total})`
       });
     }
     const v2Chars = componentsV2TotalChars(components);
@@ -618,12 +688,33 @@ var panelSelectSchema = import_zod7.z.object({
   id: import_zod7.z.string().min(1),
   type: import_zod7.z.literal("select"),
   placeholder: import_zod7.z.string().max(150).optional(),
+  /**
+   * Volta o menu ao placeholder depois de cada escolha. Sem isso o Discord
+   * continua mostrando a opção escolhida e escolher a mesma de novo não manda
+   * nada (num menu de cargo liga/desliga, não dá para tirar o cargo).
+   * Ausente = true: o bot limpa por padrão; `false` mantém a escolha visível.
+   */
+  clearAfterUse: import_zod7.z.boolean().optional(),
   options: import_zod7.z.array(panelSelectOptionSchema).min(1).max(25)
 });
 var panelComponentSchema = import_zod7.z.discriminatedUnion("type", [
   panelButtonSchema,
   panelSelectSchema
 ]);
+function countPanelAutomationRows(components) {
+  let rows = 0;
+  let buttons = 0;
+  for (const c of components) {
+    if (c.type === "select") {
+      rows += Math.ceil(buttons / 5) + 1;
+      buttons = 0;
+    } else buttons++;
+  }
+  return rows + Math.ceil(buttons / 5);
+}
+function countPanelAutomationComponents(components) {
+  return countPanelAutomationRows(components) + components.length;
+}
 var interactivePanelSchema = import_zod7.z.object({
   id: import_zod7.z.string().min(1),
   name: import_zod7.z.string().min(1).max(100),
@@ -649,8 +740,8 @@ var interactivePanelSchema = import_zod7.z.object({
         message: "use embeds ou embed, n\xE3o os dois"
       });
     }
-    const total = panel.embeds.reduce((sum, e) => sum + embedTotalChars(e), 0);
-    if (total > LIMITS.EMBEDS_TOTAL_CHARS_MAX) {
+    const total2 = panel.embeds.reduce((sum, e) => sum + embedTotalChars(e), 0);
+    if (total2 > LIMITS.EMBEDS_TOTAL_CHARS_MAX) {
       ctx.addIssue({
         code: "custom",
         path: ["embeds"],
@@ -671,6 +762,14 @@ var interactivePanelSchema = import_zod7.z.object({
       code: "custom",
       path: ["content"],
       message: "content n\xE3o \xE9 permitido com componentsV2 (flag V2 do Discord)"
+    });
+  }
+  const total = countComponentsV2(panel.componentsV2) + countPanelAutomationComponents(panel.components);
+  if (total > LIMITS.V2_TOTAL_COMPONENTS_MAX) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["componentsV2"],
+      message: `blocos + bot\xF5es/menus somam ${total} componentes; o Discord aceita ${LIMITS.V2_TOTAL_COMPONENTS_MAX}`
     });
   }
   if (componentsV2TotalChars(panel.componentsV2) > LIMITS.V2_TOTAL_CHARS_MAX) {
@@ -844,6 +943,10 @@ var eventDropsConfigSchema = import_zod8.z.object({
   containerSchema,
   containerSubComponentSchema,
   containsPlaceholder,
+  countComponentsV2,
+  countPanelAutomationComponents,
+  countPanelAutomationRows,
+  discordTimestamp,
   dropOptionSchema,
   dropSchema,
   embedFieldSchema,
@@ -876,6 +979,7 @@ var eventDropsConfigSchema = import_zod8.z.object({
   tagLossDmSchema,
   textDisplaySchema,
   thumbnailSchema,
+  timePlaceholderValues,
   urlSchema,
   usernameSchema
 });

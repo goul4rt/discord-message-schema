@@ -9,6 +9,7 @@ import { actionRowSchema } from './components';
 import {
   componentV2Schema,
   componentsV2TotalChars,
+  countComponentsV2,
   isComponentV2,
   type ComponentV2,
 } from './components-v2';
@@ -66,7 +67,8 @@ export const messageSchema = z
     avatar_url: urlSchema.optional(),
     embeds: z.array(embedSchema).max(LIMITS.EMBEDS_MAX).optional(),
     /**
-     * V1: action rows (máx. 5). V2: qualquer componente da raiz (máx. 10).
+     * V1: action rows (máx. 5). V2: qualquer componente da raiz, com teto de
+     * 40 no total da árvore (ver superRefine).
      * Qual dos dois vale é decidido pela flag — ver superRefine abaixo.
      */
     components: z
@@ -106,6 +108,14 @@ export const messageSchema = z
           code: 'custom',
           path: ['components'],
           message: 'Components V2 messages need at least one component',
+        });
+      }
+      const total = countComponentsV2(components);
+      if (total > LIMITS.V2_TOTAL_COMPONENTS_MAX) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['components'],
+          message: `Components V2 messages allow ${LIMITS.V2_TOTAL_COMPONENTS_MAX} components in total, nested ones included (${total})`,
         });
       }
       const v2Chars = componentsV2TotalChars(components as ComponentV2[]);
