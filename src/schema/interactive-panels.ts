@@ -60,11 +60,22 @@ export const savedMessageActionSchema = z.object({
   ephemeral: z.boolean().default(true),
 });
 
+/**
+ * Abre um ticket da categoria, como o botão do painel de tickets: mesmo formulário e
+ * mesmas regras (limites, cargos bloqueados). `categoryId` é o id da categoria na config
+ * de tickets do servidor (ex.: "denuncia").
+ */
+export const ticketOpenActionSchema = z.object({
+  kind: z.literal('ticket_open'),
+  categoryId: z.string().min(1).max(40),
+});
+
 export const panelActionSchema = z.discriminatedUnion('kind', [
   replyTextActionSchema,
   roleActionSchema,
   savedMsgActionSchema,
   savedMessageActionSchema,
+  ticketOpenActionSchema,
 ]);
 
 const BUTTON_STYLES = ['primary', 'secondary', 'success', 'danger'] as const;
