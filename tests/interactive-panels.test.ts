@@ -16,6 +16,16 @@ describe('panelActionSchema', () => {
     expect(panelActionSchema.safeParse({ kind: 'saved_msg', customResponseId: 'abc', ephemeral: false }).success).toBe(true);
     expect(panelActionSchema.safeParse({ kind: 'saved_message', savedMessageId: 'sm1', ephemeral: true }).success).toBe(true);
   });
+  it('ticket_open: exige categoryId (id da categoria de tickets, até 40)', () => {
+    expect(panelActionSchema.parse({ kind: 'ticket_open', categoryId: 'denuncia' })).toEqual({
+      kind: 'ticket_open',
+      categoryId: 'denuncia',
+    });
+    expect(panelActionSchema.safeParse({ kind: 'ticket_open' }).success).toBe(false);
+    expect(panelActionSchema.safeParse({ kind: 'ticket_open', categoryId: '' }).success).toBe(false);
+    expect(panelActionSchema.safeParse({ kind: 'ticket_open', categoryId: 'x'.repeat(41) }).success).toBe(false);
+  });
+
   it('saved_message: ephemeral defaulta pra true e exige savedMessageId', () => {
     const parsed = panelActionSchema.parse({ kind: 'saved_message', savedMessageId: 'sm1' });
     expect(parsed).toEqual({ kind: 'saved_message', savedMessageId: 'sm1', ephemeral: true });

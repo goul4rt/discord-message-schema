@@ -580,11 +580,16 @@ var savedMessageActionSchema = z7.object({
   savedMessageId: z7.string().min(1),
   ephemeral: z7.boolean().default(true)
 });
+var ticketOpenActionSchema = z7.object({
+  kind: z7.literal("ticket_open"),
+  categoryId: z7.string().min(1).max(40)
+});
 var panelActionSchema = z7.discriminatedUnion("kind", [
   replyTextActionSchema,
   roleActionSchema,
   savedMsgActionSchema,
-  savedMessageActionSchema
+  savedMessageActionSchema,
+  ticketOpenActionSchema
 ]);
 var BUTTON_STYLES = ["primary", "secondary", "success", "danger"];
 var panelButtonSchema = z7.object({
