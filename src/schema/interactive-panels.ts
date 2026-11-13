@@ -142,6 +142,29 @@ export function countPanelAutomationComponents(
   return countPanelAutomationRows(components) + components.length;
 }
 
+/**
+ * Lugar de um botão/menu com ação dentro dos blocos: link para este endereço
+ * com o id do componente (o bot troca pelo de verdade no envio).
+ */
+export const ACTION_SLOT_URL = 'https://delfus.app/acao/';
+
+/** Ids dos componentes que já têm lugar na árvore V2 (linhas, ao lado do texto, cartões). */
+export function actionSlotIds(tree: readonly unknown[]): Set<string> {
+  const ids = new Set<string>();
+  const visit = (n: unknown) => {
+    const node = n as { type?: number; style?: number; url?: unknown; components?: unknown[]; accessory?: unknown } | null;
+    if (!node) return;
+    if (node.type === 2 && node.style === 5 && typeof node.url === 'string' && node.url.startsWith(ACTION_SLOT_URL)) {
+      const id = node.url.slice(ACTION_SLOT_URL.length);
+      if (id) ids.add(id);
+    }
+    if (node.accessory) visit(node.accessory);
+    if (Array.isArray(node.components)) node.components.forEach(visit);
+  };
+  tree.forEach(visit);
+  return ids;
+}
+
 export const interactivePanelSchema = z
   .object({
     id: z.string().min(1),
@@ -198,9 +221,13 @@ export const interactivePanelSchema = z
       });
     }
     // Teto agregado de caracteres da mensagem V2 — cada nó tem limite próprio,
-    // mas a soma também estoura na API se passar do total.
+    // mas a soma também estoura na API se passar do total. Botão/menu com lugar
+    // nos blocos já conta como nó da árvore (o bot troca um pelo outro, mesma
+    // contagem); só os sem lugar viram linhas no fim.
+    const placed = actionSlotIds(panel.componentsV2);
     const total =
-      countComponentsV2(panel.componentsV2) + countPanelAutomationComponents(panel.components);
+      countComponentsV2(panel.componentsV2) +
+      countPanelAutomationComponents(panel.components.filter((c) => !placed.has(c.id)));
     if (total > LIMITS.V2_TOTAL_COMPONENTS_MAX) {
       ctx.addIssue({
         code: 'custom',

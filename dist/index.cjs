@@ -20,6 +20,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
+  ACTION_SLOT_URL: () => ACTION_SLOT_URL,
   ERROR_CODES: () => ERROR_CODES,
   LIMITS: () => LIMITS,
   MECHANICS: () => MECHANICS,
@@ -29,6 +30,7 @@ __export(index_exports, {
   RARITIES: () => RARITIES,
   actionButtonSchema: () => actionButtonSchema,
   actionRowSchema: () => actionRowSchema,
+  actionSlotIds: () => actionSlotIds,
   allowedMentionsSchema: () => allowedMentionsSchema,
   componentSchema: () => componentSchema,
   componentV2Schema: () => componentV2Schema,
@@ -720,6 +722,22 @@ function countPanelAutomationRows(components) {
 function countPanelAutomationComponents(components) {
   return countPanelAutomationRows(components) + components.length;
 }
+var ACTION_SLOT_URL = "https://delfus.app/acao/";
+function actionSlotIds(tree) {
+  const ids = /* @__PURE__ */ new Set();
+  const visit = (n) => {
+    const node = n;
+    if (!node) return;
+    if (node.type === 2 && node.style === 5 && typeof node.url === "string" && node.url.startsWith(ACTION_SLOT_URL)) {
+      const id = node.url.slice(ACTION_SLOT_URL.length);
+      if (id) ids.add(id);
+    }
+    if (node.accessory) visit(node.accessory);
+    if (Array.isArray(node.components)) node.components.forEach(visit);
+  };
+  tree.forEach(visit);
+  return ids;
+}
 var interactivePanelSchema = import_zod7.z.object({
   id: import_zod7.z.string().min(1),
   name: import_zod7.z.string().min(1).max(100),
@@ -769,7 +787,8 @@ var interactivePanelSchema = import_zod7.z.object({
       message: "content n\xE3o \xE9 permitido com componentsV2 (flag V2 do Discord)"
     });
   }
-  const total = countComponentsV2(panel.componentsV2) + countPanelAutomationComponents(panel.components);
+  const placed = actionSlotIds(panel.componentsV2);
+  const total = countComponentsV2(panel.componentsV2) + countPanelAutomationComponents(panel.components.filter((c) => !placed.has(c.id)));
   if (total > LIMITS.V2_TOTAL_COMPONENTS_MAX) {
     ctx.addIssue({
       code: "custom",
@@ -932,6 +951,7 @@ var eventDropsConfigSchema = import_zod8.z.object({
 });
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  ACTION_SLOT_URL,
   ERROR_CODES,
   LIMITS,
   MECHANICS,
@@ -941,6 +961,7 @@ var eventDropsConfigSchema = import_zod8.z.object({
   RARITIES,
   actionButtonSchema,
   actionRowSchema,
+  actionSlotIds,
   allowedMentionsSchema,
   componentSchema,
   componentV2Schema,

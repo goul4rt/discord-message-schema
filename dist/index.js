@@ -640,6 +640,22 @@ function countPanelAutomationRows(components) {
 function countPanelAutomationComponents(components) {
   return countPanelAutomationRows(components) + components.length;
 }
+var ACTION_SLOT_URL = "https://delfus.app/acao/";
+function actionSlotIds(tree) {
+  const ids = /* @__PURE__ */ new Set();
+  const visit = (n) => {
+    const node = n;
+    if (!node) return;
+    if (node.type === 2 && node.style === 5 && typeof node.url === "string" && node.url.startsWith(ACTION_SLOT_URL)) {
+      const id = node.url.slice(ACTION_SLOT_URL.length);
+      if (id) ids.add(id);
+    }
+    if (node.accessory) visit(node.accessory);
+    if (Array.isArray(node.components)) node.components.forEach(visit);
+  };
+  tree.forEach(visit);
+  return ids;
+}
 var interactivePanelSchema = z7.object({
   id: z7.string().min(1),
   name: z7.string().min(1).max(100),
@@ -689,7 +705,8 @@ var interactivePanelSchema = z7.object({
       message: "content n\xE3o \xE9 permitido com componentsV2 (flag V2 do Discord)"
     });
   }
-  const total = countComponentsV2(panel.componentsV2) + countPanelAutomationComponents(panel.components);
+  const placed = actionSlotIds(panel.componentsV2);
+  const total = countComponentsV2(panel.componentsV2) + countPanelAutomationComponents(panel.components.filter((c) => !placed.has(c.id)));
   if (total > LIMITS.V2_TOTAL_COMPONENTS_MAX) {
     ctx.addIssue({
       code: "custom",
@@ -851,6 +868,7 @@ var eventDropsConfigSchema = z8.object({
   });
 });
 export {
+  ACTION_SLOT_URL,
   ERROR_CODES,
   LIMITS,
   MECHANICS,
@@ -860,6 +878,7 @@ export {
   RARITIES,
   actionButtonSchema,
   actionRowSchema,
+  actionSlotIds,
   allowedMentionsSchema,
   componentSchema,
   componentV2Schema,

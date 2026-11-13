@@ -1655,6 +1655,13 @@ declare function countPanelAutomationRows(components: {
 declare function countPanelAutomationComponents(components: {
     type: 'button' | 'select';
 }[]): number;
+/**
+ * Lugar de um botão/menu com ação dentro dos blocos: link para este endereço
+ * com o id do componente (o bot troca pelo de verdade no envio).
+ */
+declare const ACTION_SLOT_URL = "https://delfus.app/acao/";
+/** Ids dos componentes que já têm lugar na árvore V2 (linhas, ao lado do texto, cartões). */
+declare function actionSlotIds(tree: readonly unknown[]): Set<string>;
 declare const interactivePanelSchema: z.ZodObject<{
     id: z.ZodString;
     name: z.ZodString;
@@ -2341,4 +2348,4 @@ type PanelSelect = z.infer<typeof panelSelectSchema>;
 type InteractivePanel = z.infer<typeof interactivePanelSchema>;
 type InteractivePanelsConfig = z.infer<typeof interactivePanelsConfigSchema>;
 
-export { type ActionRow, type AllowedMentions, type ComponentV2, type Container, ERROR_CODES, type Embed, type EmbedField, type Emoji, type InteractivePanel, type InteractivePanelsConfig, LIMITS, type Limits, type LinkButton, type MediaGallery, type MediaItem, type Message, type MessageComponent, PLACEHOLDERS, PLACEHOLDER_PATTERN, type PanelAction, type PanelButton, type PanelComponent, type PanelGate, type PanelSelect, type PlaceholderKey, type Section, type SendErrorCode, type SendMessageRequest, type SendMessageResponse, type Separator, type TagLossDm, type TextDisplay, type Thumbnail, type TimestampStyle, actionButtonSchema, actionRowSchema, allowedMentionsSchema, componentSchema, componentV2Schema, componentsV2TotalChars, containerSchema, containerSubComponentSchema, containsPlaceholder, countComponentsV2, countPanelAutomationComponents, countPanelAutomationRows, discordTimestamp, embedFieldSchema, embedSchema, embedTotalChars, emojiSchema, interactivePanelSchema, interactivePanelsConfigSchema, isComponentV2, linkButtonSchema, mediaGallerySchema, mediaItemSchema, messageSchema, panelActionSchema, panelButtonSchema, panelComponentSchema, panelGateSchema, panelSelectOptionSchema, panelSelectSchema, resolvePlaceholders, sectionSchema, selectMenuSchema, selectOptionSchema, sendErrorSchema, sendMessageRequestSchema, sendMessageResponseSchema, separatorSchema, snowflakeSchema, tagLossDmSchema, textDisplaySchema, thumbnailSchema, timePlaceholderValues, urlSchema, usernameSchema };
+export { ACTION_SLOT_URL, type ActionRow, type AllowedMentions, type ComponentV2, type Container, ERROR_CODES, type Embed, type EmbedField, type Emoji, type InteractivePanel, type InteractivePanelsConfig, LIMITS, type Limits, type LinkButton, type MediaGallery, type MediaItem, type Message, type MessageComponent, PLACEHOLDERS, PLACEHOLDER_PATTERN, type PanelAction, type PanelButton, type PanelComponent, type PanelGate, type PanelSelect, type PlaceholderKey, type Section, type SendErrorCode, type SendMessageRequest, type SendMessageResponse, type Separator, type TagLossDm, type TextDisplay, type Thumbnail, type TimestampStyle, actionButtonSchema, actionRowSchema, actionSlotIds, allowedMentionsSchema, componentSchema, componentV2Schema, componentsV2TotalChars, containerSchema, containerSubComponentSchema, containsPlaceholder, countComponentsV2, countPanelAutomationComponents, countPanelAutomationRows, discordTimestamp, embedFieldSchema, embedSchema, embedTotalChars, emojiSchema, interactivePanelSchema, interactivePanelsConfigSchema, isComponentV2, linkButtonSchema, mediaGallerySchema, mediaItemSchema, messageSchema, panelActionSchema, panelButtonSchema, panelComponentSchema, panelGateSchema, panelSelectOptionSchema, panelSelectSchema, resolvePlaceholders, sectionSchema, selectMenuSchema, selectOptionSchema, sendErrorSchema, sendMessageRequestSchema, sendMessageResponseSchema, separatorSchema, snowflakeSchema, tagLossDmSchema, textDisplaySchema, thumbnailSchema, timePlaceholderValues, urlSchema, usernameSchema };

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ACTION_SLOT_URL,
+  actionSlotIds,
   interactivePanelsConfigSchema,
   panelActionSchema,
   interactivePanelSchema,
@@ -226,5 +228,36 @@ describe('vários embeds no painel (0.10.0)', () => {
         componentsV2: [{ type: 10, content: 'x' }],
       }).success
     ).toBe(false);
+  });
+});
+
+describe('botões com lugar nos blocos não contam duas vezes (0.12.1)', () => {
+  const button = (id: string) => ({
+    id,
+    type: 'button' as const,
+    label: id,
+    action: { kind: 'reply_text' as const, text: 'oi' },
+  });
+  const slot = (id: string) => ({ type: 2, style: 5, url: `${ACTION_SLOT_URL}${id}`, label: 'x' });
+  const ids = Array.from({ length: 20 }, (_, i) => `b${i}`);
+  const rows = [0, 5, 10, 15].map((i) => ({ type: 1, components: ids.slice(i, i + 5).map(slot) }));
+  const base = { id: 'p', name: 'p', channelId: ROLE, components: ids.map(button) };
+
+  it('20 botões nos blocos (4 linhas): 24 peças, cabe', () => {
+    expect(interactivePanelSchema.safeParse({ ...base, componentsV2: rows }).success).toBe(true);
+  });
+
+  it('os mesmos 20 botões sem lugar também cabem (linhas no fim)', () => {
+    expect(
+      interactivePanelSchema.safeParse({ ...base, componentsV2: [{ type: 10, content: 'oi' }] }).success,
+    ).toBe(true);
+  });
+
+  it('acha lugar dentro de cartão e ao lado do texto', () => {
+    const tree = [
+      { type: 17, components: [{ type: 1, components: [slot('a')] }] },
+      { type: 9, components: [{ type: 10, content: 't' }], accessory: slot('b') },
+    ];
+    expect([...actionSlotIds(tree)].sort()).toEqual(['a', 'b']);
   });
 });

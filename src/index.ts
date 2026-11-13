@@ -81,6 +81,8 @@ export {
   interactivePanelsConfigSchema,
   countPanelAutomationRows,
   countPanelAutomationComponents,
+  ACTION_SLOT_URL,
+  actionSlotIds,
   type PanelGate,
   type TagLossDm,
   type PanelAction,
