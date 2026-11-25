@@ -18,6 +18,19 @@ describe('panelActionSchema', () => {
     expect(panelActionSchema.safeParse({ kind: 'saved_msg', customResponseId: 'abc', ephemeral: false }).success).toBe(true);
     expect(panelActionSchema.safeParse({ kind: 'saved_message', savedMessageId: 'sm1', ephemeral: true }).success).toBe(true);
   });
+  it('role: só um por vez e mensagens próprias são opcionais', () => {
+    const full = {
+      kind: 'role',
+      roleId: ROLE,
+      mode: 'toggle',
+      exclusive: true,
+      messageOnAdd: 'Você recebeu {cargo}!',
+      messageOnRemove: 'Você perdeu {cargo}!',
+    };
+    expect(panelActionSchema.parse(full)).toEqual(full);
+    expect(panelActionSchema.parse({ kind: 'role', roleId: ROLE })).toEqual({ kind: 'role', roleId: ROLE, mode: 'toggle' });
+    expect(panelActionSchema.safeParse({ ...full, messageOnAdd: 'x'.repeat(2001) }).success).toBe(false);
+  });
   it('ticket_open: exige categoryId (id da categoria de tickets, até 40)', () => {
     expect(panelActionSchema.parse({ kind: 'ticket_open', categoryId: 'denuncia' })).toEqual({
       kind: 'ticket_open',
