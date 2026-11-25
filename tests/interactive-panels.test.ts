@@ -86,6 +86,13 @@ describe('interactivePanelsConfigSchema', () => {
     expect(panelGateSchema.safeParse({ requireServerTag: true, tagLossDm: { kind: 'saved_message', savedMessageId: 'm1' } }).success).toBe(true);
     expect(panelGateSchema.safeParse({ requireServerTag: true, tagLossDm: { kind: 'text', text: '' } }).success).toBe(false);
   });
+  it('aceita painel sem canal (só dentro de outra resposta)', () => {
+    const ok = interactivePanelsConfigSchema.safeParse({
+      enabled: true,
+      panels: [{ id: 'p', name: 'x', components: [{ id: 'b', type: 'button', label: 'x', action: { kind: 'reply_text', text: 'oi' } }] }],
+    });
+    expect(ok.success).toBe(true);
+  });
   it('rejeita botão sem ação', () => {
     const bad = interactivePanelsConfigSchema.safeParse({
       enabled: true,

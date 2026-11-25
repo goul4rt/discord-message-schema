@@ -1684,7 +1684,7 @@ declare const interactivePanelSchema: z.ZodObject<{
     id: z.ZodString;
     name: z.ZodString;
     enabled: z.ZodDefault<z.ZodBoolean>;
-    channelId: z.ZodString;
+    channelId: z.ZodOptional<z.ZodString>;
     messageId: z.ZodOptional<z.ZodString>;
     content: z.ZodOptional<z.ZodString>;
     embed: z.ZodOptional<z.ZodObject<{
@@ -2029,7 +2029,7 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
         id: z.ZodString;
         name: z.ZodString;
         enabled: z.ZodDefault<z.ZodBoolean>;
-        channelId: z.ZodString;
+        channelId: z.ZodOptional<z.ZodString>;
         messageId: z.ZodOptional<z.ZodString>;
         content: z.ZodOptional<z.ZodString>;
         embed: z.ZodOptional<z.ZodObject<{
