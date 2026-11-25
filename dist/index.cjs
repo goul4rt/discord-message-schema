@@ -650,7 +650,16 @@ var replyTextActionSchema = import_zod7.z.object({
 var roleActionSchema = import_zod7.z.object({
   kind: import_zod7.z.literal("role"),
   roleId: snowflakeSchema,
-  mode: import_zod7.z.enum(["toggle", "add", "remove"]).default("toggle")
+  mode: import_zod7.z.enum(["toggle", "add", "remove"]).default("toggle"),
+  /**
+   * Só um por vez: ao dar este cargo, o bot tira os outros cargos das ações
+   * `exclusive` do mesmo painel (ou da mesma resposta). Ex.: cores do nome.
+   */
+  exclusive: import_zod7.z.boolean().optional(),
+  /** Resposta ao dar o cargo; `{cargo}` vira o nome do cargo. Ausente = padrão do bot. */
+  messageOnAdd: import_zod7.z.string().max(2e3).optional(),
+  /** Resposta ao tirar o cargo; `{cargo}` vira o nome do cargo. */
+  messageOnRemove: import_zod7.z.string().max(2e3).optional()
 });
 var savedMsgActionSchema = import_zod7.z.object({
   kind: import_zod7.z.literal("saved_msg"),

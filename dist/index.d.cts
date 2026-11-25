@@ -1378,6 +1378,9 @@ declare const panelActionSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
         add: "add";
         remove: "remove";
     }>>;
+    exclusive: z.ZodOptional<z.ZodBoolean>;
+    messageOnAdd: z.ZodOptional<z.ZodString>;
+    messageOnRemove: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>, z.ZodObject<{
     kind: z.ZodLiteral<"saved_msg">;
     customResponseId: z.ZodString;
@@ -1429,6 +1432,9 @@ declare const panelButtonSchema: z.ZodObject<{
             add: "add";
             remove: "remove";
         }>>;
+        exclusive: z.ZodOptional<z.ZodBoolean>;
+        messageOnAdd: z.ZodOptional<z.ZodString>;
+        messageOnRemove: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>, z.ZodObject<{
         kind: z.ZodLiteral<"saved_msg">;
         customResponseId: z.ZodString;
@@ -1475,6 +1481,9 @@ declare const panelSelectOptionSchema: z.ZodObject<{
             add: "add";
             remove: "remove";
         }>>;
+        exclusive: z.ZodOptional<z.ZodBoolean>;
+        messageOnAdd: z.ZodOptional<z.ZodString>;
+        messageOnRemove: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>, z.ZodObject<{
         kind: z.ZodLiteral<"saved_msg">;
         customResponseId: z.ZodString;
@@ -1526,6 +1535,9 @@ declare const panelSelectSchema: z.ZodObject<{
                 add: "add";
                 remove: "remove";
             }>>;
+            exclusive: z.ZodOptional<z.ZodBoolean>;
+            messageOnAdd: z.ZodOptional<z.ZodString>;
+            messageOnRemove: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>, z.ZodObject<{
             kind: z.ZodLiteral<"saved_msg">;
             customResponseId: z.ZodString;
@@ -1579,6 +1591,9 @@ declare const panelComponentSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
             add: "add";
             remove: "remove";
         }>>;
+        exclusive: z.ZodOptional<z.ZodBoolean>;
+        messageOnAdd: z.ZodOptional<z.ZodString>;
+        messageOnRemove: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>, z.ZodObject<{
         kind: z.ZodLiteral<"saved_msg">;
         customResponseId: z.ZodString;
@@ -1629,6 +1644,9 @@ declare const panelComponentSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
                 add: "add";
                 remove: "remove";
             }>>;
+            exclusive: z.ZodOptional<z.ZodBoolean>;
+            messageOnAdd: z.ZodOptional<z.ZodString>;
+            messageOnRemove: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>, z.ZodObject<{
             kind: z.ZodLiteral<"saved_msg">;
             customResponseId: z.ZodString;
@@ -1934,6 +1952,9 @@ declare const interactivePanelSchema: z.ZodObject<{
                 add: "add";
                 remove: "remove";
             }>>;
+            exclusive: z.ZodOptional<z.ZodBoolean>;
+            messageOnAdd: z.ZodOptional<z.ZodString>;
+            messageOnRemove: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>, z.ZodObject<{
             kind: z.ZodLiteral<"saved_msg">;
             customResponseId: z.ZodString;
@@ -1984,6 +2005,9 @@ declare const interactivePanelSchema: z.ZodObject<{
                     add: "add";
                     remove: "remove";
                 }>>;
+                exclusive: z.ZodOptional<z.ZodBoolean>;
+                messageOnAdd: z.ZodOptional<z.ZodString>;
+                messageOnRemove: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>, z.ZodObject<{
                 kind: z.ZodLiteral<"saved_msg">;
                 customResponseId: z.ZodString;
@@ -2273,6 +2297,9 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
                     add: "add";
                     remove: "remove";
                 }>>;
+                exclusive: z.ZodOptional<z.ZodBoolean>;
+                messageOnAdd: z.ZodOptional<z.ZodString>;
+                messageOnRemove: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>, z.ZodObject<{
                 kind: z.ZodLiteral<"saved_msg">;
                 customResponseId: z.ZodString;
@@ -2323,6 +2350,9 @@ declare const interactivePanelsConfigSchema: z.ZodObject<{
                         add: "add";
                         remove: "remove";
                     }>>;
+                    exclusive: z.ZodOptional<z.ZodBoolean>;
+                    messageOnAdd: z.ZodOptional<z.ZodString>;
+                    messageOnRemove: z.ZodOptional<z.ZodString>;
                 }, z.core.$strip>, z.ZodObject<{
                     kind: z.ZodLiteral<"saved_msg">;
                     customResponseId: z.ZodString;

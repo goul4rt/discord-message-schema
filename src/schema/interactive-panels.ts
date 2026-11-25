@@ -45,6 +45,15 @@ export const roleActionSchema = z.object({
   kind: z.literal('role'),
   roleId: snowflakeSchema,
   mode: z.enum(['toggle', 'add', 'remove']).default('toggle'),
+  /**
+   * Só um por vez: ao dar este cargo, o bot tira os outros cargos das ações
+   * `exclusive` do mesmo painel (ou da mesma resposta). Ex.: cores do nome.
+   */
+  exclusive: z.boolean().optional(),
+  /** Resposta ao dar o cargo; `{cargo}` vira o nome do cargo. Ausente = padrão do bot. */
+  messageOnAdd: z.string().max(2000).optional(),
+  /** Resposta ao tirar o cargo; `{cargo}` vira o nome do cargo. */
+  messageOnRemove: z.string().max(2000).optional(),
 });
 
 export const savedMsgActionSchema = z.object({
