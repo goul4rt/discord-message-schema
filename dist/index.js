@@ -669,7 +669,9 @@ var interactivePanelSchema = z7.object({
   id: z7.string().min(1),
   name: z7.string().min(1).max(100),
   enabled: z7.boolean().default(true),
-  channelId: snowflakeSchema,
+  /** Ausente = painel que só aparece dentro de outra resposta (ação
+   *  `saved_message` apontando para o id dele); nunca foi publicado. */
+  channelId: snowflakeSchema.optional(),
   messageId: snowflakeSchema.optional(),
   content: z7.string().max(2e3).optional(),
   /** Legado (até 0.9): um embed só. Painéis novos gravam `embeds`; o bot
